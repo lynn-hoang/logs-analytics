@@ -1,0 +1,535 @@
+-------------------------------------
+Translated Report (Full Report Below)
+-------------------------------------
+Process:             BestVPN [91436]
+Path:                /Users/USER/Documents/*/BestVPN.app/Contents/MacOS/BestVPN
+Identifier:          com.pan.BestVPN
+Version:             1.0 (1)
+Code Type:           ARM-64 (Native)
+Role:                Foreground
+Parent Process:      launchd [1]
+Coalition:           com.pan.BestVPN [132652]
+User ID:             501
+
+Date/Time:           2026-05-22 15:56:34.3721 -0700
+Launch Time:         2026-05-22 15:55:44.8542 -0700
+Hardware Model:      MacBookPro18,1
+OS Version:          macOS 26.4.1 (25E253)
+Release Type:        User
+
+Crash Reporter Key:  51157878-7559-13BB-8673-EBBD1F3EBF37
+Incident Identifier: D376D299-5D6B-4B81-B0F4-F3A94C67F9B7
+
+Sleep/Wake UUID:       E8FCEFE5-2668-4F39-BA02-4DFF9A95E16B
+
+Time Awake Since Boot: 630000 seconds
+Time Since Wake:       200010 seconds
+
+System Integrity Protection: enabled
+
+Triggered by Thread: 0, Dispatch Queue: com.apple.main-thread
+
+Exception Type:    EXC_BREAKPOINT (SIGTRAP)
+Exception Codes:   0x0000000000000001, 0x0000000196f9c4d4
+
+Termination Reason:  Namespace SIGNAL, Code 5, Trace/BPT trap: 5
+Terminating Process: exc handler [91436]
+
+
+External Modification Warnings:
+Debugger attached to process.
+
+Thread 0 Crashed::  Dispatch queue: com.apple.main-thread
+0   libswiftCore.dylib            	       0x196f9c4d4 closure #1 in closure #1 in _assertionFailure(_:_:file:line:flags:) + 400
+1   libswiftCore.dylib            	       0x196f9bfa8 _assertionFailure(_:_:file:line:flags:) + 276
+2   libswiftCore.dylib            	       0x196e4a2a4 Array._checkSubscript(_:wasNativeTypeChecked:) + 160
+3   libswiftCore.dylib            	       0x196e71628 Array.subscript.getter + 88
+4   BestVPN.debug.dylib           	       0x100d84b54 ContentView.triggerCrash() + 96 (ContentView.swift:72)
+5   BestVPN.debug.dylib           	       0x100d84ae8 closure #1 in closure #2 in closure #1 in closure #1 in ContentView.body.getter + 44 (ContentView.swift:32)
+6   SwiftUI                       	       0x1b96b65a4 partial apply for closure #1 in ButtonAction.callAsFunction() + 32
+7   SwiftUI                       	       0x1b96f8ff0 specialized static MainActor.assumeIsolated<A>(_:file:line:) + 140
+8   SwiftUI                       	       0x1b96b28b4 ButtonAction.callAsFunction() + 592
+9   SwiftUI                       	       0x1b850ecc4 <deduplicated_symbol> + 88
+10  SwiftUI                       	       0x1b8d1dd9c ButtonBehavior.ended() + 252
+11  SwiftUI                       	       0x1b8d25c8c partial apply for implicit closure #2 in implicit closure #1 in ButtonBehavior.body.getter + 36
+12  SwiftUI                       	       0x1b963ade4 partial apply for closure #1 in closure #2 in closure #1 in _ButtonGesture.internalBody.getter + 36
+13  SwiftUI                       	       0x1b96f8ff0 specialized static MainActor.assumeIsolated<A>(_:file:line:) + 140
+14  SwiftUI                       	       0x1b9633bec closure #2 in closure #1 in _ButtonGesture.internalBody.getter + 96
+15  SwiftUI                       	       0x1b963be80 partial apply for closure #2 in PrimitiveButtonGestureCallbacks.dispatch(phase:state:) + 152
+16  SwiftUICore                   	       0x230152c1c <deduplicated_symbol> + 28
+17  SwiftUICore                   	       0x230632500 <deduplicated_symbol> + 28
+18  SwiftUI                       	       0x1b862680c <deduplicated_symbol> + 28
+19  SwiftUI                       	       0x1b8b2a1c4 <deduplicated_symbol> + 52
+20  SwiftUICore                   	       0x230479d44 static Update.dispatchActions() + 1660
+21  SwiftUICore                   	       0x230478b68 static Update.end() + 72
+22  SwiftUICore                   	       0x230478898 static Update.enqueueAction(reason:_:) + 204
+23  SwiftUI                       	       0x1b8fd067c AppKitEventBindingBridge.flushActions() + 516
+24  SwiftUI                       	       0x1b8fd06d0 @objc AppKitEventBindingBridge.flushActions() + 28
+25  AppKit                        	       0x187ecd7bc _NSGestureRecognizerSendActions + 428
+26  AppKit                        	       0x188bd8b90 -[NSGestureRecognizer _updateGesture] + 444
+27  Gestures                      	       0x24e324ec4 0x24e314000 + 69316
+28  Gestures                      	       0x24e346334 0x24e314000 + 205620
+29  Gestures                      	       0x24e377a6c 0x24e314000 + 408172
+30  Gestures                      	       0x24e3a6494 0x24e314000 + 599188
+31  AppKit                        	       0x188b0a970 -[_NSGFGestureEnvironment _routeMouseEventToActiveGestureRecognizers:] + 312
+32  AppKit                        	       0x188431648 -[_NSGestureEnvironmentBase _sendMouseEventToGestureRecognizers:requireAcceptsFirstMouse:] + 376
+33  AppKit                        	       0x1884329ec -[_NSGestureEnvironmentBase sendEventToGestureRecognizers:requireAcceptsFirstMouse:] + 92
+34  AppKit                        	       0x187dbae0c -[NSWindow(NSEventRouting) sendEvent:] + 316
+35  AppKit                        	       0x18882b1f8 -[NSApplication(NSEventRouting) sendEvent:] + 1276
+36  AppKit                        	       0x188478498 -[NSApplication _handleEvent:] + 60
+37  AppKit                        	       0x187c8a164 -[NSApplication run] + 408
+38  AppKit                        	       0x187c627b0 NSApplicationMain + 880
+39  SwiftUI                       	       0x1b84a34f0 specialized runApp(_:) + 140
+40  SwiftUI                       	       0x1b88593a0 runApp<A>(_:) + 104
+41  SwiftUI                       	       0x1b8b25240 static App.main() + 224
+42  BestVPN.debug.dylib           	       0x100d87eb8 static BestVPNApp.$main() + 40
+43  BestVPN.debug.dylib           	       0x100d88008 __debug_main_executable_dylib_entry_point + 12
+44  dyld                          	       0x1833f3da4 start + 6992
+
+Thread 1:: com.apple.NSEventThread
+0   libsystem_kernel.dylib        	       0x18376bc34 mach_msg2_trap + 8
+1   libsystem_kernel.dylib        	       0x18377e574 mach_msg2_internal + 76
+2   libsystem_kernel.dylib        	       0x1837749c0 mach_msg_overwrite + 480
+3   libsystem_kernel.dylib        	       0x18376bfc0 mach_msg + 24
+4   CoreFoundation                	       0x18386cd68 __CFRunLoopServiceMachPort + 160
+5   CoreFoundation                	       0x18386b654 __CFRunLoopRun + 1188
+6   CoreFoundation                	       0x18393dbe0 _CFRunLoopRunSpecificWithOptions + 532
+7   AppKit                        	       0x187db8c64 _NSEventThread + 184
+8   libsystem_pthread.dylib       	       0x100db508c _pthread_start + 136
+9   libsystem_pthread.dylib       	       0x100dbef98 thread_start + 8
+
+Thread 2::  Dispatch queue: com.apple.root.utility-qos
+0   libswiftCore.dylib            	       0x196ef7e88 swift_conformsToProtocolMaybeInstantiateSuperclasses(swift::TargetMetadata<swift::InProcess> const*, swift::TargetProtocolDescriptor<swift::InProcess> const*, bool)::$_2::operator()((anonymous namespace)::ConformanceSection const&) const::'lambda'(swift::TargetProtocolConformanceDescriptor<swift::InProcess> const&)::operator()(swift::TargetProtocolConformanceDescriptor<swift::InProcess> const&) const + 152
+1   libswiftCore.dylib            	       0x196ef6a48 swift_conformsToProtocolMaybeInstantiateSuperclasses(swift::TargetMetadata<swift::InProcess> const*, swift::TargetProtocolDescriptor<swift::InProcess> const*, bool) + 4208
+2   libswiftCore.dylib            	       0x196e440d4 swift_conformsToProtocol + 88
+3   AttributeGraph                	       0x1b9b03b3c AG::LayoutDescriptor::Builder::should_visit_fields(AG::swift::metadata const*, bool) + 416
+4   AttributeGraph                	       0x1b9b047b0 AG::LayoutDescriptor::make_layout(AG::swift::metadata const*, AGComparisonMode, AG::LayoutDescriptor::HeapMode) + 124
+5   AttributeGraph                	       0x1b9b064c0 AG::(anonymous namespace)::TypeDescriptorCache::drain_queue(void*) + 360
+6   libdispatch.dylib             	       0x100f18ee0 _dispatch_client_callout + 16
+7   libdispatch.dylib             	       0x100f120ac _dispatch_root_queue_drain + 960
+8   libdispatch.dylib             	       0x100f12978 _dispatch_worker_thread2 + 204
+9   libsystem_pthread.dylib       	       0x100db77b8 _pthread_wqthread + 232
+10  libsystem_pthread.dylib       	       0x100dbef8c start_wqthread + 8
+
+Thread 3:
+
+Thread 4:
+
+
+Thread 0 crashed with ARM Thread State (64-bit):
+    x0: 0x0000100000000000   x1: 0xffffffffb0000000   x2: 0x0000000000000060   x3: 0xfffff0007fc00000
+    x4: 0x0000000000000000   x5: 0x000000016f319650   x6: 0x0000000000000065   x7: 0xfffff0003ffff800
+    x8: 0x0000000000000000   x9: 0x000000007fbaf56f  x10: 0x0000000000000000  x11: 0x0000000000000000
+   x12: 0x04de86f380450a90  x13: 0x04de768e00450272  x14: 0x0000000000050800  x15: 0x0000000000000007
+   x16: 0x952d000568402900  x17: 0x0000000de768e272  x18: 0x0000000000000000  x19: 0x000000016f319780
+   x20: 0x00000001f036dab8  x21: 0x0000000000000001  x22: 0x00000001f036dab8  x23: 0x00000000ffffffff
+   x24: 0x0000000000000328  x25: 0x000000029c380548  x26: 0x0000000000000000  x27: 0x00000001b96b6584
+   x28: 0x000000016f3199d0   fp: 0x000000016f319760   lr: 0x0000000196f9c4d4
+    sp: 0x000000016f3196e0   pc: 0x0000000196f9c4d4 cpsr: 0x00001000
+   far: 0x0000000000000000  esr: 0xf2000001 (Breakpoint) brk 1
+
+Binary Images:
+       0x100b34000 -        0x100b37fff libLogRedirect.dylib (*) <ffe36b24-3020-3578-8cde-97068f11c4eb> /Applications/Xcode.app/Contents/Developer/usr/lib/libLogRedirect.dylib
+       0x100afc000 -        0x100b03fff libBacktraceRecording.dylib (*) <251a8b98-3271-30a8-8ee9-3af4272193bc> /Applications/Xcode.app/Contents/Developer/usr/lib/libBacktraceRecording.dylib
+       0x100c2c000 -        0x100c6ffff libMainThreadChecker.dylib (*) <bbd44b01-7dc5-3de3-bbeb-b3ad66b7ef8f> /Applications/Xcode.app/Contents/Developer/usr/lib/libMainThreadChecker.dylib
+       0x100ffc000 -        0x101093fff libRPAC.dylib (*) <1194db49-0733-3d74-8d84-e86fc5e245ba> /usr/lib/libRPAC.dylib
+       0x100b48000 -        0x100b77fff libViewDebuggerSupport.dylib (*) <a3ff2f7f-6c97-3884-9c31-0ce132ac9ed7> /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Debugger/libViewDebuggerSupport.dylib
+       0x100ae4000 -        0x100ae7fff com.pan.BestVPN (1.0) <87c64492-5f34-3090-ada0-b4bd8f7ec8e8> /Users/USER/Documents/*/BestVPN.app/Contents/MacOS/BestVPN
+       0x100d80000 -        0x100d8bfff BestVPN.debug.dylib (*) <a27472f2-1de6-33ef-b8a6-1ef0a87ef98d> /Users/USER/Documents/*/BestVPN.app/Contents/MacOS/BestVPN.debug.dylib
+       0x100ef8000 -        0x100f53fff libdispatch.dylib (*) <f3513f73-5278-3f3d-8405-b3eeb2e6e3fe> /usr/lib/system/introspection/libdispatch.dylib
+       0x100db4000 -        0x100dc3fff libsystem_pthread.dylib (*) <b35adfb4-ed85-323d-bd2c-65206e58fbae> /usr/lib/system/introspection/libsystem_pthread.dylib
+       0x100e8c000 -        0x100ebffff com.apple.tdg.RealityKitInspection (1.0) <ae4fca5b-3285-3f5d-bb68-face7efcaf9b> /Applications/Xcode.app/Contents/SharedFrameworks/RealityKitInspection.framework/Versions/A/RealityKitInspection
+       0x100dec000 -        0x100e0ffff com.apple.dt.DebugHierarchyFoundation (1.0) <b9616fb4-9bb1-3d6a-a31a-e5e9bfea9d12> /Applications/Xcode.app/Contents/SharedFrameworks/DebugHierarchyFoundation.framework/Versions/A/DebugHierarchyFoundation
+       0x10176c000 -        0x1017a7fff com.apple.tdg.SpatialInspectorFoundation (1.0) <45e92aba-4c47-3d2b-aaa3-b9b2b5e5644c> /Applications/Xcode.app/Contents/SharedFrameworks/SpatialInspectorFoundation.framework/Versions/A/SpatialInspectorFoundation
+       0x101730000 -        0x10173bfff libobjc-trampolines.dylib (*) <a4dd56f1-375a-3540-844b-5e397f0b78b3> /usr/lib/libobjc-trampolines.dylib
+       0x115450000 -        0x115bdbfff com.apple.AGXMetalG13X (350.38) <95c14223-fa99-3e3d-9570-8e7862d86a54> /System/Library/Extensions/AGXMetalG13X.bundle/Contents/MacOS/AGXMetalG13X
+       0x196e3b000 -        0x1973dc93f libswiftCore.dylib (*) <fb6ad37d-0f92-3774-ab61-0323db22c111> /usr/lib/swift/libswiftCore.dylib
+       0x1b8398000 -        0x1b9ae173f com.apple.SwiftUI (7.4.27) <4600d6f5-77b3-33c5-969c-3b38dfa4169e> /System/Library/Frameworks/SwiftUI.framework/Versions/A/SwiftUI
+       0x22ff30000 -        0x230e8c91f com.apple.SwiftUICore (7.4.27) <85689117-3964-395e-8d53-9526fbc52cf2> /System/Library/Frameworks/SwiftUICore.framework/Versions/A/SwiftUICore
+       0x187c5e000 -        0x189380abf com.apple.AppKit (6.9) <59e23bd5-d01e-305a-b96f-a5790356049a> /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit
+       0x24e314000 -        0x24e3d7e9f com.apple.Gestures (9126.1.5) <ebd4a257-1460-3cfb-91ff-61eba39b1ac3> /System/Library/PrivateFrameworks/Gestures.framework/Versions/A/Gestures
+       0x1833d4000 -        0x183479ec7 dyld (*) <9f682dcf-340c-3bfa-bcdd-dd702f30313e> /usr/lib/dyld
+               0x0 - 0xffffffffffffffff ??? (*) <00000000-0000-0000-0000-000000000000> ???
+       0x18376b000 -        0x1837a828f libsystem_kernel.dylib (*) <51565b39-f595-3e96-a217-fef29815057a> /usr/lib/system/libsystem_kernel.dylib
+       0x1837ef000 -        0x183d4cc5f com.apple.CoreFoundation (6.9) <04941709-2330-3bf8-9213-6d33964db448> /System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation
+       0x1b9ae2000 -        0x1b9b270ff com.apple.AttributeGraph (7.0.80) <c9289991-f749-3df3-aefa-788884864080> /System/Library/PrivateFrameworks/AttributeGraph.framework/Versions/A/AttributeGraph
+       0x1be93b000 -        0x1becc0b3f com.apple.SoundAnalysis (1.0) <5990caa7-1f31-3dd5-8d59-8b25ca7dddf7> /System/Library/Frameworks/SoundAnalysis.framework/Versions/A/SoundAnalysis
+
+External Modification Summary:
+  Calls made by other processes targeting this process:
+    task_for_pid: 1
+    thread_create: 0
+    thread_set_state: 36
+  Calls made by this process:
+    task_for_pid: 0
+    thread_create: 0
+    thread_set_state: 0
+  Calls made by all processes on this machine:
+    task_for_pid: 18
+    thread_create: 0
+    thread_set_state: 540
+
+-----------
+Full Report
+-----------
+
+{"app_name":"BestVPN","timestamp":"2026-05-22 15:56:39.00 -0700","app_version":"1.0","slice_uuid":"87c64492-5f34-3090-ada0-b4bd8f7ec8e8","build_version":"1","platform":1,"bundleID":"com.pan.BestVPN","share_with_app_devs":0,"is_first_party":0,"bug_type":"309","os_version":"macOS 26.4.1 (25E253)","roots_installed":0,"name":"BestVPN","incident_id":"D376D299-5D6B-4B81-B0F4-F3A94C67F9B7"}
+{
+  "uptime" : 630000,
+  "procRole" : "Foreground",
+  "version" : 2,
+  "userID" : 501,
+  "deployVersion" : 210,
+  "modelCode" : "MacBookPro18,1",
+  "coalitionID" : 132652,
+  "osVersion" : {
+    "train" : "macOS 26.4.1",
+    "build" : "25E253",
+    "releaseType" : "User"
+  },
+  "captureTime" : "2026-05-22 15:56:34.3721 -0700",
+  "codeSigningMonitor" : 2,
+  "incident" : "D376D299-5D6B-4B81-B0F4-F3A94C67F9B7",
+  "pid" : 91436,
+  "translated" : false,
+  "cpuType" : "ARM-64",
+  "procLaunch" : "2026-05-22 15:55:44.8542 -0700",
+  "procStartAbsTime" : 15148706586122,
+  "procExitAbsTime" : 15149894686879,
+  "procName" : "BestVPN",
+  "procPath" : "\/Users\/USER\/Documents\/*\/BestVPN.app\/Contents\/MacOS\/BestVPN",
+  "bundleInfo" : {"CFBundleShortVersionString":"1.0","CFBundleVersion":"1","CFBundleIdentifier":"com.pan.BestVPN"},
+  "storeInfo" : {"deviceIdentifierForVendor":"012FBC4D-AD09-5D0F-95E7-9A5740400326","thirdParty":true},
+  "parentProc" : "launchd",
+  "parentPid" : 1,
+  "coalitionName" : "com.pan.BestVPN",
+  "crashReporterKey" : "51157878-7559-13BB-8673-EBBD1F3EBF37",
+  "appleIntelligenceStatus" : {"state":"available"},
+  "developerMode" : 1,
+  "codeSigningID" : "com.pan.BestVPN",
+  "codeSigningTeamID" : "WBYH5JW557",
+  "codeSigningFlags" : 1912680500,
+  "codeSigningValidationCategory" : 3,
+  "codeSigningTrustLevel" : 4294967295,
+  "codeSigningAuxiliaryInfo" : 0,
+  "instructionByteStream" : {"beforePC":"6AUAtej8YNMoAQC14AMFquEDBqrkAwuq5QMJquYDB6rnAwqqnlj\/lw==","atPC":"IAAg1CgAgFKJn4FS6BMAuekHAPlIAIBS6AMAOWAaAJAAEDqRYxoAkA=="},
+  "bootSessionUUID" : "51B95B9B-06F7-4507-9B63-48F0EED0590C",
+  "wakeTime" : 200010,
+  "sleepWakeUUID" : "E8FCEFE5-2668-4F39-BA02-4DFF9A95E16B",
+  "sip" : "enabled",
+  "exception" : {"codes":"0x0000000000000001, 0x0000000196f9c4d4","rawCodes":[1,6827918548],"type":"EXC_BREAKPOINT","signal":"SIGTRAP"},
+  "termination" : {"flags":0,"code":5,"namespace":"SIGNAL","indicator":"Trace\/BPT trap: 5","byProc":"exc handler","byPid":91436},
+  "os_fault" : {"process":"BestVPN"},
+  "extMods" : {"caller":{"thread_create":0,"thread_set_state":0,"task_for_pid":0},"system":{"thread_create":0,"thread_set_state":540,"task_for_pid":18},"targeted":{"thread_create":0,"thread_set_state":36,"task_for_pid":1},"warnings":1},
+  "faultingThread" : 0,
+  "threads" : [{"triggered":true,"id":18101034,"threadState":{"x":[{"value":17592186044416},{"value":18446744072367374336},{"value":96},{"value":18446726483666796544},{"value":0},{"value":6160488016},{"value":101},{"value":18446726482597246976},{"value":0},{"value":2142958959},{"value":0},{"value":0},{"value":350866201368660624},{"value":350848173243433586},{"value":329728},{"value":7},{"value":10749247908827113728},{"value":59716985458},{"value":0},{"value":6160488320},{"value":8325094072,"symbolLocation":0,"symbol":"_swiftEmptyArrayStorage"},{"value":1},{"value":8325094072,"symbolLocation":0,"symbol":"_swiftEmptyArrayStorage"},{"value":4294967295},{"value":808},{"value":11210851656,"symbolLocation":0,"symbol":"type metadata for MainActor"},{"value":0},{"value":7405790596,"symbolLocation":0,"symbol":"partial apply for closure #1 in ButtonAction.callAsFunction()"},{"value":6160488912}],"flavor":"ARM_THREAD_STATE64","lr":{"value":6827918548},"cpsr":{"value":4096},"fp":{"value":6160488288},"sp":{"value":6160488160},"esr":{"value":4060086273,"description":"(Breakpoint) brk 1"},"pc":{"value":6827918548,"matchesCrashFrame":1},"far":{"value":0}},"queue":"com.apple.main-thread","frames":[{"imageOffset":1447124,"symbol":"closure #1 in closure #1 in _assertionFailure(_:_:file:line:flags:)","symbolLocation":400,"imageIndex":14},{"imageOffset":1445800,"symbol":"_assertionFailure(_:_:file:line:flags:)","symbolLocation":276,"imageIndex":14},{"imageOffset":62116,"symbol":"Array._checkSubscript(_:wasNativeTypeChecked:)","symbolLocation":160,"imageIndex":14},{"imageOffset":222760,"symbol":"Array.subscript.getter","symbolLocation":88,"imageIndex":14},{"imageOffset":19284,"sourceLine":72,"sourceFile":"ContentView.swift","symbol":"ContentView.triggerCrash()","imageIndex":6,"symbolLocation":96},{"imageOffset":19176,"sourceLine":32,"sourceFile":"ContentView.swift","symbol":"closure #1 in closure #2 in closure #1 in closure #1 in ContentView.body.getter","imageIndex":6,"symbolLocation":44},{"imageOffset":20047268,"symbol":"partial apply for closure #1 in ButtonAction.callAsFunction()","symbolLocation":32,"imageIndex":15},{"imageOffset":20320240,"symbol":"specialized static MainActor.assumeIsolated<A>(_:file:line:)","symbolLocation":140,"imageIndex":15},{"imageOffset":20031668,"symbol":"ButtonAction.callAsFunction()","symbolLocation":592,"imageIndex":15},{"imageOffset":1535172,"symbol":"<deduplicated_symbol>","symbolLocation":88,"imageIndex":15},{"imageOffset":9985436,"symbol":"ButtonBehavior.ended()","symbolLocation":252,"imageIndex":15},{"imageOffset":10017932,"symbol":"partial apply for implicit closure #2 in implicit closure #1 in ButtonBehavior.body.getter","symbolLocation":36,"imageIndex":15},{"imageOffset":19541476,"symbol":"partial apply for closure #1 in closure #2 in closure #1 in _ButtonGesture.internalBody.getter","symbolLocation":36,"imageIndex":15},{"imageOffset":20320240,"symbol":"specialized static MainActor.assumeIsolated<A>(_:file:line:)","symbolLocation":140,"imageIndex":15},{"imageOffset":19512300,"symbol":"closure #2 in closure #1 in _ButtonGesture.internalBody.getter","symbolLocation":96,"imageIndex":15},{"imageOffset":19545728,"symbol":"partial apply for closure #2 in PrimitiveButtonGestureCallbacks.dispatch(phase:state:)","symbolLocation":152,"imageIndex":15},{"imageOffset":2239516,"symbol":"<deduplicated_symbol>","symbolLocation":28,"imageIndex":16},{"imageOffset":7349504,"symbol":"<deduplicated_symbol>","symbolLocation":28,"imageIndex":16},{"imageOffset":2680844,"symbol":"<deduplicated_symbol>","symbolLocation":28,"imageIndex":15},{"imageOffset":7938500,"symbol":"<deduplicated_symbol>","symbolLocation":52,"imageIndex":15},{"imageOffset":5545284,"symbol":"static Update.dispatchActions()","symbolLocation":1660,"imageIndex":16},{"imageOffset":5540712,"symbol":"static Update.end()","symbolLocation":72,"imageIndex":16},{"imageOffset":5539992,"symbol":"static Update.enqueueAction(reason:_:)","symbolLocation":204,"imageIndex":16},{"imageOffset":12813948,"symbol":"AppKitEventBindingBridge.flushActions()","symbolLocation":516,"imageIndex":15},{"imageOffset":12814032,"symbol":"@objc AppKitEventBindingBridge.flushActions()","symbolLocation":28,"imageIndex":15},{"imageOffset":2553788,"symbol":"_NSGestureRecognizerSendActions","symbolLocation":428,"imageIndex":17},{"imageOffset":16231312,"symbol":"-[NSGestureRecognizer _updateGesture]","symbolLocation":444,"imageIndex":17},{"imageOffset":69316,"imageIndex":18},{"imageOffset":205620,"imageIndex":18},{"imageOffset":408172,"imageIndex":18},{"imageOffset":599188,"imageIndex":18},{"imageOffset":15386992,"symbol":"-[_NSGFGestureEnvironment _routeMouseEventToActiveGestureRecognizers:]","symbolLocation":312,"imageIndex":17},{"imageOffset":8205896,"symbol":"-[_NSGestureEnvironmentBase _sendMouseEventToGestureRecognizers:requireAcceptsFirstMouse:]","symbolLocation":376,"imageIndex":17},{"imageOffset":8210924,"symbol":"-[_NSGestureEnvironmentBase sendEventToGestureRecognizers:requireAcceptsFirstMouse:]","symbolLocation":92,"imageIndex":17},{"imageOffset":1429004,"symbol":"-[NSWindow(NSEventRouting) sendEvent:]","symbolLocation":316,"imageIndex":17},{"imageOffset":12374520,"symbol":"-[NSApplication(NSEventRouting) sendEvent:]","symbolLocation":1276,"imageIndex":17},{"imageOffset":8496280,"symbol":"-[NSApplication _handleEvent:]","symbolLocation":60,"imageIndex":17},{"imageOffset":180580,"symbol":"-[NSApplication run]","symbolLocation":408,"imageIndex":17},{"imageOffset":18352,"symbol":"NSApplicationMain","symbolLocation":880,"imageIndex":17},{"imageOffset":1094896,"symbol":"specialized runApp(_:)","symbolLocation":140,"imageIndex":15},{"imageOffset":4985760,"symbol":"runApp<A>(_:)","symbolLocation":104,"imageIndex":15},{"imageOffset":7918144,"symbol":"static App.main()","symbolLocation":224,"imageIndex":15},{"imageOffset":32440,"sourceFile":"\/<compiler-generated>","symbol":"static BestVPNApp.$main()","symbolLocation":40,"imageIndex":6},{"imageOffset":32776,"sourceFile":"BestVPNApp.swift","symbol":"__debug_main_executable_dylib_entry_point","symbolLocation":12,"imageIndex":6},{"imageOffset":130468,"symbol":"start","symbolLocation":6992,"imageIndex":19}]},{"id":18101792,"name":"com.apple.NSEventThread","threadState":{"x":[{"value":268451845},{"value":21592279046},{"value":8589934592,"objc-selector":"rolAndCharacteristicStateItemModule:childItemsForItem:"},{"value":127556233723904},{"value":0},{"value":127556233723904},{"value":2},{"value":4294967295},{"value":0},{"value":17179869184},{"value":0},{"value":2},{"value":0},{"value":0},{"value":29699},{"value":2},{"value":18446744073709551569},{"value":8334026288},{"value":0},{"value":4294967295},{"value":2},{"value":127556233723904},{"value":0},{"value":127556233723904},{"value":21592279046},{"value":6163914888},{"value":8589934592,"objc-selector":"rolAndCharacteristicStateItemModule:childItemsForItem:"},{"value":18446744073709550527},{"value":4412409862}],"flavor":"ARM_THREAD_STATE64","lr":{"value":6500640116},"cpsr":{"value":4096},"fp":{"value":6163914736},"sp":{"value":6163914656},"esr":{"value":1442840704,"description":"(Syscall)"},"pc":{"value":6500564020},"far":{"value":0}},"frames":[{"imageOffset":3124,"symbol":"mach_msg2_trap","symbolLocation":8,"imageIndex":21},{"imageOffset":79220,"symbol":"mach_msg2_internal","symbolLocation":76,"imageIndex":21},{"imageOffset":39360,"symbol":"mach_msg_overwrite","symbolLocation":480,"imageIndex":21},{"imageOffset":4032,"symbol":"mach_msg","symbolLocation":24,"imageIndex":21},{"imageOffset":515432,"symbol":"__CFRunLoopServiceMachPort","symbolLocation":160,"imageIndex":22},{"imageOffset":509524,"symbol":"__CFRunLoopRun","symbolLocation":1188,"imageIndex":22},{"imageOffset":1371104,"symbol":"_CFRunLoopRunSpecificWithOptions","symbolLocation":532,"imageIndex":22},{"imageOffset":1420388,"symbol":"_NSEventThread","symbolLocation":184,"imageIndex":17},{"imageOffset":4236,"symbol":"_pthread_start","symbolLocation":136,"imageIndex":8},{"imageOffset":44952,"symbol":"thread_start","symbolLocation":8,"imageIndex":8}]},{"id":18102514,"threadState":{"x":[{"value":6161624208},{"value":7495374812},{"value":0},{"value":0},{"value":6832232328,"symbolLocation":0,"symbol":"protocol descriptor for Equatable"},{"value":6496862656,"symbolLocation":0,"symbol":"dyld4::APIs::_dyld_find_protocol_conformance_on_disk(void const*, void const*, void const*, unsigned int)"},{"value":0},{"value":2016},{"value":6832232328,"symbolLocation":0,"symbol":"protocol descriptor for Equatable"},{"value":838766348},{"value":6161624046},{"value":0},{"value":1},{"value":0},{"value":3},{"value":48067150952},{"value":6832232328,"symbolLocation":0,"symbol":"protocol descriptor for Equatable"},{"value":59657},{"value":0},{"value":23224010248},{"value":6161624208},{"value":7495374812},{"value":7495697624},{"value":6161624056},{"value":6161624047},{"value":6161624032},{"value":6161624064},{"value":7495697620},{"value":7495700280}],"flavor":"ARM_THREAD_STATE64","lr":{"value":6827240008},"cpsr":{"value":1610616832},"fp":{"value":6161623856},"sp":{"value":6161623712},"esr":{"value":1442840704,"description":"(Syscall)"},"pc":{"value":6827245192},"far":{"value":0}},"queue":"com.apple.root.utility-qos","frames":[{"imageOffset":773768,"symbol":"swift_conformsToProtocolMaybeInstantiateSuperclasses(swift::TargetMetadata<swift::InProcess> const*, swift::TargetProtocolDescriptor<swift::InProcess> const*, bool)::$_2::operator()((anonymous namespace)::ConformanceSection const&) const::'lambda'(swift::TargetProtocolConformanceDescriptor<swift::InProcess> const&)::operator()(swift::TargetProtocolConformanceDescriptor<swift::InProcess> const&) const","symbolLocation":152,"imageIndex":14},{"imageOffset":768584,"symbol":"swift_conformsToProtocolMaybeInstantiateSuperclasses(swift::TargetMetadata<swift::InProcess> const*, swift::TargetProtocolDescriptor<swift::InProcess> const*, bool)","symbolLocation":4208,"imageIndex":14},{"imageOffset":37076,"symbol":"swift_conformsToProtocol","symbolLocation":88,"imageIndex":14},{"imageOffset":138044,"symbol":"AG::LayoutDescriptor::Builder::should_visit_fields(AG::swift::metadata const*, bool)","symbolLocation":416,"imageIndex":23},{"imageOffset":141232,"symbol":"AG::LayoutDescriptor::make_layout(AG::swift::metadata const*, AGComparisonMode, AG::LayoutDescriptor::HeapMode)","symbolLocation":124,"imageIndex":23},{"imageOffset":148672,"symbol":"AG::(anonymous namespace)::TypeDescriptorCache::drain_queue(void*)","symbolLocation":360,"imageIndex":23},{"imageOffset":134880,"symbol":"_dispatch_client_callout","symbolLocation":16,"imageIndex":7},{"imageOffset":106668,"symbol":"_dispatch_root_queue_drain","symbolLocation":960,"imageIndex":7},{"imageOffset":108920,"symbol":"_dispatch_worker_thread2","symbolLocation":204,"imageIndex":7},{"imageOffset":14264,"symbol":"_pthread_wqthread","symbolLocation":232,"imageIndex":8},{"imageOffset":44940,"symbol":"start_wqthread","symbolLocation":8,"imageIndex":8}]},{"id":18103179,"frames":[],"threadState":{"x":[{"value":6161051648},{"value":5127},{"value":6160515072},{"value":0},{"value":409604},{"value":18446744073709551615},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0}],"flavor":"ARM_THREAD_STATE64","lr":{"value":0},"cpsr":{"value":4096},"fp":{"value":0},"sp":{"value":6161051648},"esr":{"value":1442840704,"description":"(Syscall)"},"pc":{"value":4309380996},"far":{"value":0}}},{"id":18103302,"frames":[],"threadState":{"x":[{"value":6162198528},{"value":24091},{"value":6161661952},{"value":0},{"value":409604},{"value":18446744073709551615},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0},{"value":0}],"flavor":"ARM_THREAD_STATE64","lr":{"value":0},"cpsr":{"value":4096},"fp":{"value":0},"sp":{"value":6162198528},"esr":{"value":1442840704,"description":"(Syscall)"},"pc":{"value":4309380996},"far":{"value":0}}}],
+  "usedImages" : [
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 4306714624,
+    "size" : 16384,
+    "uuid" : "ffe36b24-3020-3578-8cde-97068f11c4eb",
+    "path" : "\/Applications\/Xcode.app\/Contents\/Developer\/usr\/lib\/libLogRedirect.dylib",
+    "name" : "libLogRedirect.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 4306485248,
+    "size" : 32768,
+    "uuid" : "251a8b98-3271-30a8-8ee9-3af4272193bc",
+    "path" : "\/Applications\/Xcode.app\/Contents\/Developer\/usr\/lib\/libBacktraceRecording.dylib",
+    "name" : "libBacktraceRecording.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 4307730432,
+    "size" : 278528,
+    "uuid" : "bbd44b01-7dc5-3de3-bbeb-b3ad66b7ef8f",
+    "path" : "\/Applications\/Xcode.app\/Contents\/Developer\/usr\/lib\/libMainThreadChecker.dylib",
+    "name" : "libMainThreadChecker.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 4311728128,
+    "size" : 622592,
+    "uuid" : "1194db49-0733-3d74-8d84-e86fc5e245ba",
+    "path" : "\/usr\/lib\/libRPAC.dylib",
+    "name" : "libRPAC.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 4306796544,
+    "size" : 196608,
+    "uuid" : "a3ff2f7f-6c97-3884-9c31-0ce132ac9ed7",
+    "path" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/MacOSX.platform\/Developer\/Library\/Debugger\/libViewDebuggerSupport.dylib",
+    "name" : "libViewDebuggerSupport.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 4306386944,
+    "CFBundleShortVersionString" : "1.0",
+    "CFBundleIdentifier" : "com.pan.BestVPN",
+    "size" : 16384,
+    "uuid" : "87c64492-5f34-3090-ada0-b4bd8f7ec8e8",
+    "path" : "\/Users\/USER\/Documents\/*\/BestVPN.app\/Contents\/MacOS\/BestVPN",
+    "name" : "BestVPN",
+    "CFBundleVersion" : "1"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64",
+    "base" : 4309123072,
+    "size" : 49152,
+    "uuid" : "a27472f2-1de6-33ef-b8a6-1ef0a87ef98d",
+    "path" : "\/Users\/USER\/Documents\/*\/BestVPN.app\/Contents\/MacOS\/BestVPN.debug.dylib",
+    "name" : "BestVPN.debug.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 4310663168,
+    "size" : 376832,
+    "uuid" : "f3513f73-5278-3f3d-8405-b3eeb2e6e3fe",
+    "path" : "\/usr\/lib\/system\/introspection\/libdispatch.dylib",
+    "name" : "libdispatch.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 4309336064,
+    "size" : 65536,
+    "uuid" : "b35adfb4-ed85-323d-bd2c-65206e58fbae",
+    "path" : "\/usr\/lib\/system\/introspection\/libsystem_pthread.dylib",
+    "name" : "libsystem_pthread.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 4310220800,
+    "CFBundleShortVersionString" : "1.0",
+    "CFBundleIdentifier" : "com.apple.tdg.RealityKitInspection",
+    "size" : 212992,
+    "uuid" : "ae4fca5b-3285-3f5d-bb68-face7efcaf9b",
+    "path" : "\/Applications\/Xcode.app\/Contents\/SharedFrameworks\/RealityKitInspection.framework\/Versions\/A\/RealityKitInspection",
+    "name" : "RealityKitInspection",
+    "CFBundleVersion" : "1"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 4309565440,
+    "CFBundleShortVersionString" : "1.0",
+    "CFBundleIdentifier" : "com.apple.dt.DebugHierarchyFoundation",
+    "size" : 147456,
+    "uuid" : "b9616fb4-9bb1-3d6a-a31a-e5e9bfea9d12",
+    "path" : "\/Applications\/Xcode.app\/Contents\/SharedFrameworks\/DebugHierarchyFoundation.framework\/Versions\/A\/DebugHierarchyFoundation",
+    "name" : "DebugHierarchyFoundation",
+    "CFBundleVersion" : "2"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 4319526912,
+    "CFBundleShortVersionString" : "1.0",
+    "CFBundleIdentifier" : "com.apple.tdg.SpatialInspectorFoundation",
+    "size" : 245760,
+    "uuid" : "45e92aba-4c47-3d2b-aaa3-b9b2b5e5644c",
+    "path" : "\/Applications\/Xcode.app\/Contents\/SharedFrameworks\/SpatialInspectorFoundation.framework\/Versions\/A\/SpatialInspectorFoundation",
+    "name" : "SpatialInspectorFoundation",
+    "CFBundleVersion" : "1"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 4319281152,
+    "size" : 49152,
+    "uuid" : "a4dd56f1-375a-3540-844b-5e397f0b78b3",
+    "path" : "\/usr\/lib\/libobjc-trampolines.dylib",
+    "name" : "libobjc-trampolines.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 4651810816,
+    "CFBundleShortVersionString" : "350.38",
+    "CFBundleIdentifier" : "com.apple.AGXMetalG13X",
+    "size" : 7913472,
+    "uuid" : "95c14223-fa99-3e3d-9570-8e7862d86a54",
+    "path" : "\/System\/Library\/Extensions\/AGXMetalG13X.bundle\/Contents\/MacOS\/AGXMetalG13X",
+    "name" : "AGXMetalG13X",
+    "CFBundleVersion" : "350.38"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 6826471424,
+    "size" : 5904704,
+    "uuid" : "fb6ad37d-0f92-3774-ab61-0323db22c111",
+    "path" : "\/usr\/lib\/swift\/libswiftCore.dylib",
+    "name" : "libswiftCore.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 7385743360,
+    "CFBundleShortVersionString" : "7.4.27",
+    "CFBundleIdentifier" : "com.apple.SwiftUI",
+    "size" : 24418112,
+    "uuid" : "4600d6f5-77b3-33c5-969c-3b38dfa4169e",
+    "path" : "\/System\/Library\/Frameworks\/SwiftUI.framework\/Versions\/A\/SwiftUI",
+    "name" : "SwiftUI",
+    "CFBundleVersion" : "7.4.27"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 9394388992,
+    "CFBundleShortVersionString" : "7.4.27",
+    "CFBundleIdentifier" : "com.apple.SwiftUICore",
+    "size" : 16107808,
+    "uuid" : "85689117-3964-395e-8d53-9526fbc52cf2",
+    "path" : "\/System\/Library\/Frameworks\/SwiftUICore.framework\/Versions\/A\/SwiftUICore",
+    "name" : "SwiftUICore",
+    "CFBundleVersion" : "7.4.27"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 6572859392,
+    "CFBundleShortVersionString" : "6.9",
+    "CFBundleIdentifier" : "com.apple.AppKit",
+    "size" : 24259264,
+    "uuid" : "59e23bd5-d01e-305a-b96f-a5790356049a",
+    "path" : "\/System\/Library\/Frameworks\/AppKit.framework\/Versions\/C\/AppKit",
+    "name" : "AppKit",
+    "CFBundleVersion" : "2685.50.120"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 9901785088,
+    "CFBundleShortVersionString" : "9126.1.5",
+    "CFBundleIdentifier" : "com.apple.Gestures",
+    "size" : 802464,
+    "uuid" : "ebd4a257-1460-3cfb-91ff-61eba39b1ac3",
+    "path" : "\/System\/Library\/PrivateFrameworks\/Gestures.framework\/Versions\/A\/Gestures",
+    "name" : "Gestures",
+    "CFBundleVersion" : "9126.1.5"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 6496796672,
+    "size" : 679624,
+    "uuid" : "9f682dcf-340c-3bfa-bcdd-dd702f30313e",
+    "path" : "\/usr\/lib\/dyld",
+    "name" : "dyld"
+  },
+  {
+    "size" : 0,
+    "source" : "A",
+    "base" : 0,
+    "uuid" : "00000000-0000-0000-0000-000000000000"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 6500560896,
+    "size" : 250512,
+    "uuid" : "51565b39-f595-3e96-a217-fef29815057a",
+    "path" : "\/usr\/lib\/system\/libsystem_kernel.dylib",
+    "name" : "libsystem_kernel.dylib"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 6501101568,
+    "CFBundleShortVersionString" : "6.9",
+    "CFBundleIdentifier" : "com.apple.CoreFoundation",
+    "size" : 5626976,
+    "uuid" : "04941709-2330-3bf8-9213-6d33964db448",
+    "path" : "\/System\/Library\/Frameworks\/CoreFoundation.framework\/Versions\/A\/CoreFoundation",
+    "name" : "CoreFoundation",
+    "CFBundleVersion" : "4424.1.402"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 7410163712,
+    "CFBundleShortVersionString" : "7.0.80",
+    "CFBundleIdentifier" : "com.apple.AttributeGraph",
+    "size" : 282880,
+    "uuid" : "c9289991-f749-3df3-aefa-788884864080",
+    "path" : "\/System\/Library\/PrivateFrameworks\/AttributeGraph.framework\/Versions\/A\/AttributeGraph",
+    "name" : "AttributeGraph",
+    "CFBundleVersion" : "7.0.80"
+  },
+  {
+    "source" : "P",
+    "arch" : "arm64e",
+    "base" : 7492317184,
+    "CFBundleShortVersionString" : "1.0",
+    "CFBundleIdentifier" : "com.apple.SoundAnalysis",
+    "size" : 3693376,
+    "uuid" : "5990caa7-1f31-3dd5-8d59-8b25ca7dddf7",
+    "path" : "\/System\/Library\/Frameworks\/SoundAnalysis.framework\/Versions\/A\/SoundAnalysis",
+    "name" : "SoundAnalysis",
+    "CFBundleVersion" : "1"
+  }
+],
+  "sharedCache" : {
+  "base" : 6495666176,
+  "size" : 5978570752,
+  "uuid" : "2d40543a-792e-37b8-978d-3d7030e1aa81"
+},
+  "legacyInfo" : {
+  "threadTriggered" : {
+    "queue" : "com.apple.main-thread"
+  }
+},
+  "logWritingSignature" : "637a994fc882a289b3a662ac83a3a912e723320c",
+  "roots_installed" : 0,
+  "bug_type" : "309",
+  "trmStatus" : 1,
+  "trialInfo" : {
+  "rollouts" : [
+    {
+      "rolloutId" : "6297d96be2c9387df974efa4",
+      "factorPackIds" : [
+
+      ],
+      "deploymentId" : 240000032
+    },
+    {
+      "rolloutId" : "644114de41e7236e6177f9bd",
+      "factorPackIds" : [
+
+      ],
+      "deploymentId" : 240000013
+    }
+  ],
+  "experiments" : [
+
+  ]
+}
+}
+
+Model: MacBookPro18,1, BootROM 18000.101.7, proc 10:8:2:0 processors, 32 GB, SMC 
+Graphics: Apple M1 Pro, Apple M1 Pro, Built-In
+Display: HP Spectre 32, 3840 x 2160 (2160p/4K UHD 1 - Ultra High Definition), Main, MirrorOff, Online
+Display: Color LCD, 3456 x 2234 Retina, MirrorOff, Online
+Memory Module: LPDDR5, Hynix
+AirPort: spairport_wireless_card_type_wifi (0x14E4, 0x4387), wl0: Jan 20 2026 17:44:15 version 20.140.13.0.8.7.224 FWID 01-b2a3fd0d
+IO80211_driverkit-1555.23 "IO80211_driverkit-1555.23" Apr  5 2026 21:03:59
+AirPort: 
+Bluetooth: Version (null), 0 services, 0 devices, 0 incoming serial ports
+Network Service: Wi-Fi, AirPort, en0
+Thunderbolt Bus: MacBook Pro, Apple Inc.
+Thunderbolt Bus: MacBook Pro, Apple Inc.
+Thunderbolt Bus: MacBook Pro, Apple Inc.

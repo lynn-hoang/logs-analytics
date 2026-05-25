@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central Support Portal</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Login Page -->
+        <div id="login-page" class="page">
+            <div class="login-container">
+                <h1>Central Support Portal</h1>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" placeholder="Enter username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Enter password" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Login</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Main Page -->
+        <div id="main-page" class="page hidden">
+            <header>
+                <h1>Central Support Portal</h1>
+                <div class="header-actions">
+                    <span id="user-display"></span>
+                    <button id="logout-btn" class="btn-secondary">Logout</button>
+                </div>
+            </header>
+
+            <!-- Tenant Info Banner -->
+            <div class="tenant-banner">
+                <span class="tenant-label"></span>
+                <span class="tenant-id" id="tenant-id">Acme Corporation</span>
+            </div>
+
+            <!-- Tabs -->
+            <nav class="tabs">
+                <button class="tab-btn active" data-tab="issues">Issues</button>
+                <button class="tab-btn hidden" data-tab="signatures" id="signatures-tab-btn">Signatures</button>
+                <button class="tab-btn hidden" data-tab="diagnostics" id="diagnostics-tab-btn">Diagnostic Configuration</button>
+            </nav>
+
+            <!-- Issues Tab -->
+            <main id="issues-tab" class="tab-content">
+                <div class="toolbar">
+                    <h2>Issues</h2>
+                    <div class="toolbar-actions">
+                        <button id="add-issue-btn" class="btn-primary">+ Add Issue</button>
+                        <button id="refresh-btn" class="btn-secondary">Refresh</button>
+                    </div>
+                </div>
+
+                <!-- Issues Dashboard -->
+                <div class="dashboard-container">
+                    <div class="dashboard-row">
+                        <!-- Status Stats -->
+                        <div class="dashboard-card">
+                            <h3>Issue Status</h3>
+                            <div class="stats-row">
+                                <div class="mini-stat">
+                                    <span class="mini-stat-value" id="issues-total">0</span>
+                                    <span class="mini-stat-label">Total</span>
+                                </div>
+                                <div class="mini-stat stat-open">
+                                    <span class="mini-stat-value" id="issues-open">0</span>
+                                    <span class="mini-stat-label">Open</span>
+                                </div>
+                                <div class="mini-stat stat-resolved">
+                                    <span class="mini-stat-value" id="issues-resolved">0</span>
+                                    <span class="mini-stat-label">Resolved</span>
+                                </div>
+                                <div class="mini-stat stat-closed">
+                                    <span class="mini-stat-value" id="issues-closed">0</span>
+                                    <span class="mini-stat-label">Closed</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- OS Breakdown -->
+                        <div class="dashboard-card">
+                            <h3>OS Breakdown</h3>
+                            <div class="os-breakdown" id="os-breakdown">
+                                <p class="no-data">No data</p>
+                            </div>
+                        </div>
+
+                        <!-- Timeline -->
+                        <div class="dashboard-card dashboard-card-wide">
+                            <h3>Issues Timeline (Last 7 Days)</h3>
+                            <div class="timeline-chart" id="timeline-chart">
+                                <p class="no-data">No data</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table id="issues-table">
+                        <thead>
+                            <tr>
+                                <th>Issue ID</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Occurrences</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="issues-tbody">
+                        </tbody>
+                    </table>
+                </div>
+                <div id="no-issues" class="hidden">
+                    <p>No issues found.</p>
+                </div>
+                <div id="loading" class="hidden">
+                    <p>Loading...</p>
+                </div>
+            </main>
+
+            <!-- Signatures Tab -->
+            <main id="signatures-tab" class="tab-content hidden">
+                <div class="toolbar">
+                    <h2>Known Signatures</h2>
+                    <div class="toolbar-actions">
+                        <button id="resolve-matching-btn" class="btn-success">Resolve Matching Issues</button>
+                        <button id="add-signature-btn" class="btn-primary">+ Add Signature</button>
+                        <button id="refresh-signatures-btn" class="btn-secondary">Refresh</button>
+                    </div>
+                </div>
+
+                <!-- Signature Stats -->
+                <div class="stats-container" id="signature-stats">
+                    <div class="stat-card stat-crash">
+                        <span class="stat-value" id="stat-crash">0</span>
+                        <span class="stat-label">Crash</span>
+                    </div>
+                    <div class="stat-card stat-hang">
+                        <span class="stat-value" id="stat-hang">0</span>
+                        <span class="stat-label">Hang</span>
+                    </div>
+                    <div class="stat-card stat-general">
+                        <span class="stat-value" id="stat-general">0</span>
+                        <span class="stat-label">General</span>
+                    </div>
+                    <div class="stat-card stat-total">
+                        <span class="stat-value" id="stat-total">0</span>
+                        <span class="stat-label">Total</span>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="signatures-table">
+                        <thead>
+                            <tr>
+                                <th>Signature ID</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Resolution</th>
+                                <th>Created At</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="signatures-tbody">
+                        </tbody>
+                    </table>
+                </div>
+                <div id="no-signatures" class="hidden">
+                    <p>No signatures found.</p>
+                </div>
+            </main>
+
+            <!-- Add Signature Modal -->
+            <div id="add-signature-modal" class="modal hidden">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Add New Signature</h3>
+                        <button class="modal-close" id="add-sig-modal-close">&times;</button>
+                    </div>
+                    <form id="add-signature-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="sig-type">Type</label>
+                                <select id="sig-type" required>
+                                    <option value="crash">Crash</option>
+                                    <option value="hang">Hang</option>
+                                    <option value="general">General</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="sig-resolution">Resolution (optional)</label>
+                                <select id="sig-resolution">
+                                    <option value="">None</option>
+                                    <option value="kb_article">KB Article</option>
+                                    <option value="product_update">Update Product</option>
+                                    <option value="os_update">Update OS</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="sig-text">Signature Text</label>
+                            <textarea id="sig-text" placeholder="Enter signature pattern to match..." rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="sig-description">Description</label>
+                            <textarea id="sig-description" placeholder="Describe this signature..." rows="2"></textarea>
+                        </div>
+                        <div class="form-group hidden" id="kb-upload-group">
+                            <label for="sig-kb-file">KB Article (HTML file)</label>
+                            <input type="file" id="sig-kb-file" accept=".html,.htm">
+                            <div id="kb-preview" class="kb-preview hidden"></div>
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn-secondary" id="add-sig-cancel">Cancel</button>
+                            <button type="submit" class="btn-primary">Add Signature</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Diagnostic Configuration Tab -->
+            <main id="diagnostics-tab" class="tab-content hidden">
+                <div class="toolbar">
+                    <h2>Diagnostic Configuration</h2>
+                    <div class="toolbar-actions">
+                        <button id="new-config-btn" class="btn-primary">+ New Config</button>
+                        <button id="refresh-configs-btn" class="btn-secondary">Refresh</button>
+                    </div>
+                </div>
+
+                <!-- Configs List -->
+                <div id="configs-list-section">
+                    <div class="table-container">
+                        <table id="configs-table">
+                            <thead>
+                                <tr>
+                                    <th>Tenant ID</th>
+                                    <th>App Name</th>
+                                    <th>Version</th>
+                                    <th>Status</th>
+                                    <th>Updated At</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="configs-tbody">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="no-configs" class="hidden">
+                        <p>No configurations found. Click "+ New Config" to create one.</p>
+                    </div>
+                </div>
+
+                <div class="config-section hidden" id="new-config-section">
+                    <h3>Basic Settings</h3>
+                    <form id="diagnostic-config-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="diag-tenant-id">Tenant ID</label>
+                                <input type="text" id="diag-tenant-id" placeholder="e.g., acme-corp" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="diag-app-name">App Name</label>
+                                <input type="text" id="diag-app-name" placeholder="e.g., BestVPN" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="diag-product-id">Product Identifier</label>
+                                <input type="text" id="diag-product-id" placeholder="e.g., bestvpn" required>
+                            </div>
+                        </div>
+
+                        <h3>Monitoring Intervals</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="diag-crash-freq">Crash Frequency</label>
+                                <select id="diag-crash-freq">
+                                    <option value="immediately">Immediately</option>
+                                    <option value="interval">Interval (minutes)</option>
+                                </select>
+                                <input type="number" id="diag-crash-interval" class="interval-input hidden" placeholder="Minutes" min="1" step="0.5">
+                            </div>
+                            <div class="form-group">
+                                <label for="diag-hang-freq">Hang Frequency</label>
+                                <select id="diag-hang-freq">
+                                    <option value="immediately">Immediately</option>
+                                    <option value="interval">Interval (minutes)</option>
+                                </select>
+                                <input type="number" id="diag-hang-interval" class="interval-input hidden" placeholder="Minutes" min="1" step="0.5">
+                            </div>
+                            <div class="form-group">
+                                <label for="diag-general-freq">General Frequency</label>
+                                <select id="diag-general-freq">
+                                    <option value="immediately">Immediately</option>
+                                    <option value="interval" selected>Interval (minutes)</option>
+                                </select>
+                                <input type="number" id="diag-general-interval" class="interval-input" placeholder="Minutes" min="1" step="0.5" value="5">
+                            </div>
+                        </div>
+
+                        <h3>Pre-configured Commands</h3>
+                        <p class="section-hint">Select common diagnostic commands to include:</p>
+                        <div class="preconfig-commands">
+                            <label class="preconfig-item">
+                                <input type="checkbox" id="preconfig-system-info">
+                                <div class="preconfig-info">
+                                    <span class="preconfig-name">System Info</span>
+                                    <span class="preconfig-desc">macOS version information</span>
+                                </div>
+                            </label>
+                            <label class="preconfig-item">
+                                <input type="checkbox" id="preconfig-hostname">
+                                <div class="preconfig-info">
+                                    <span class="preconfig-name">Hostname</span>
+                                    <span class="preconfig-desc">Machine hostname</span>
+                                </div>
+                            </label>
+                            <label class="preconfig-item">
+                                <input type="checkbox" id="preconfig-uptime">
+                                <div class="preconfig-info">
+                                    <span class="preconfig-name">Uptime</span>
+                                    <span class="preconfig-desc">System uptime and load</span>
+                                </div>
+                            </label>
+                            <label class="preconfig-item">
+                                <input type="checkbox" id="preconfig-disk-space">
+                                <div class="preconfig-info">
+                                    <span class="preconfig-name">Disk Space</span>
+                                    <span class="preconfig-desc">Available disk space</span>
+                                </div>
+                            </label>
+                            <label class="preconfig-item">
+                                <input type="checkbox" id="preconfig-network-interfaces">
+                                <div class="preconfig-info">
+                                    <span class="preconfig-name">Network Interfaces</span>
+                                    <span class="preconfig-desc">Network interface configuration</span>
+                                </div>
+                            </label>
+                        </div>
+
+                        <h3>Custom Commands</h3>
+                        <p class="section-hint">Add your own diagnostic commands:</p>
+                        <div id="commands-list">
+                            <!-- Custom commands will be added here dynamically -->
+                        </div>
+                        <button type="button" id="add-command-btn" class="btn-secondary">+ Add Custom Command</button>
+
+                        <div class="form-actions">
+                            <button type="button" id="preview-config-btn" class="btn-secondary">Preview JSON</button>
+                            <button type="button" id="save-config-btn" class="btn-success">Save to Server</button>
+                            <button type="submit" class="btn-primary">Download JSON</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- JSON Preview -->
+                <div id="json-preview-section" class="hidden">
+                    <h3>Configuration Preview</h3>
+                    <pre id="json-preview"></pre>
+                </div>
+                </div><!-- End new-config-section -->
+            </main>
+        </div>
+        <!-- Add Custom Command Modal -->
+        <div id="add-command-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Add Custom Command</h3>
+                    <button class="modal-close" id="add-cmd-modal-close">&times;</button>
+                </div>
+                <form id="add-command-form">
+                    <div class="form-group">
+                        <label for="cmd-name">Command Name</label>
+                        <input type="text" id="cmd-name" placeholder="e.g., network_services" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cmd-command">Command Path</label>
+                        <input type="text" id="cmd-command" placeholder="e.g., /usr/sbin/networksetup" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cmd-arguments">Arguments (comma-separated)</label>
+                        <input type="text" id="cmd-arguments" placeholder="e.g., -listallnetworkservices">
+                    </div>
+                    <div class="form-group">
+                        <label>Target OS</label>
+                        <div class="checkbox-row">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="cmd-os-macos" checked>
+                                macOS
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="cmd-os-windows">
+                                Windows
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-row checkbox-row">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="cmd-include-crash" checked>
+                            Include with Crash
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="cmd-include-hang" checked>
+                            Include with Hang
+                        </label>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" id="add-cmd-cancel">Cancel</button>
+                        <button type="submit" class="btn-primary">Add Command</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add Issue Modal -->
+        <div id="add-issue-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Add Issue</h3>
+                    <button class="modal-close" id="add-issue-modal-close">&times;</button>
+                </div>
+                <form id="add-issue-form">
+                    <div class="form-group">
+                        <label for="issue-type">Issue Type</label>
+                        <select id="issue-type" required>
+                            <option value="crash">Crash</option>
+                            <option value="hang">Hang</option>
+                            <option value="general">General</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="issue-log-content">Log Content</label>
+                        <textarea id="issue-log-content" placeholder="Paste log content here..." rows="6" required></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="issue-app-version">App Version</label>
+                            <input type="text" id="issue-app-version" placeholder="e.g., 1.0.0" value="1.0.0">
+                        </div>
+                        <div class="form-group">
+                            <label for="issue-os-version">OS Version</label>
+                            <input type="text" id="issue-os-version" placeholder="e.g., macOS 14.0" value="macOS 14.0">
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" id="add-issue-cancel">Cancel</button>
+                        <button type="submit" class="btn-primary">Add Issue</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- KB Article Viewer Modal -->
+        <div id="kb-modal" class="modal hidden">
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h3>KB Article</h3>
+                    <button class="modal-close" id="kb-modal-close">&times;</button>
+                </div>
+                <div class="kb-article-content" id="kb-article-content">
+                </div>
+            </div>
+        </div>
+
+        <!-- Issue Details Modal -->
+        <div id="issue-modal" class="modal hidden">
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h3>Issue Details</h3>
+                    <button class="modal-close" id="issue-modal-close">&times;</button>
+                </div>
+                <div class="issue-details-content" id="issue-details-content">
+                    <p>Loading...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Signature Modal -->
+        <div id="edit-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Edit Signature</h3>
+                    <button class="modal-close" id="modal-close">&times;</button>
+                </div>
+                <form id="edit-signature-form">
+                    <input type="hidden" id="edit-sig-id">
+                    <input type="hidden" id="edit-sig-original-type">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-sig-type">Type</label>
+                            <select id="edit-sig-type" required>
+                                <option value="crash">Crash</option>
+                                <option value="hang">Hang</option>
+                                <option value="general">General</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-sig-resolution">Resolution (optional)</label>
+                            <select id="edit-sig-resolution">
+                                <option value="">None</option>
+                                <option value="kb_article">KB Article</option>
+                                <option value="product_update">Update Product</option>
+                                <option value="os_update">Update OS</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-sig-text">Signature Text</label>
+                        <textarea id="edit-sig-text" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-sig-description">Description</label>
+                        <textarea id="edit-sig-description" rows="2"></textarea>
+                    </div>
+                    <div class="form-group hidden" id="edit-kb-upload-group">
+                        <label for="edit-sig-kb-file">KB Article (HTML file) - Upload new to replace</label>
+                        <input type="file" id="edit-sig-kb-file" accept=".html,.htm">
+                        <div id="edit-kb-preview" class="kb-preview hidden"></div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" id="modal-cancel">Cancel</button>
+                        <button type="submit" class="btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Config Details Modal (Editable) -->
+        <div id="config-modal" class="modal hidden">
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h3 id="config-modal-title">Configuration Details</h3>
+                    <button class="modal-close" id="config-modal-close">&times;</button>
+                </div>
+                <form id="config-modal-form">
+                    <input type="hidden" id="config-modal-id">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="config-modal-tenant-id">Tenant ID</label>
+                            <input type="text" id="config-modal-tenant-id" readonly class="readonly-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="config-modal-app-name">App Name</label>
+                            <input type="text" id="config-modal-app-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="config-modal-product-id">Product Identifier</label>
+                            <input type="text" id="config-modal-product-id" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Version</label>
+                            <input type="text" id="config-modal-version" readonly class="readonly-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Last Updated</label>
+                            <input type="text" id="config-modal-updated" readonly class="readonly-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="config-modal-status">Status</label>
+                            <select id="config-modal-status">
+                                <option value="pending">Pending</option>
+                                <option value="acknowledged">Acknowledged</option>
+                                <option value="deployed">Deployed</option>
+                                <option value="dismissed">Dismissed</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <h4>Monitoring Intervals</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="config-modal-crash-freq">Crash Frequency</label>
+                            <select id="config-modal-crash-freq">
+                                <option value="immediately">Immediately</option>
+                                <option value="interval">Interval (minutes)</option>
+                            </select>
+                            <input type="number" id="config-modal-crash-interval" class="interval-input hidden" placeholder="Minutes" min="1" step="0.5">
+                        </div>
+                        <div class="form-group">
+                            <label for="config-modal-hang-freq">Hang Frequency</label>
+                            <select id="config-modal-hang-freq">
+                                <option value="immediately">Immediately</option>
+                                <option value="interval">Interval (minutes)</option>
+                            </select>
+                            <input type="number" id="config-modal-hang-interval" class="interval-input hidden" placeholder="Minutes" min="1" step="0.5">
+                        </div>
+                        <div class="form-group">
+                            <label for="config-modal-general-freq">General Frequency</label>
+                            <select id="config-modal-general-freq">
+                                <option value="immediately">Immediately</option>
+                                <option value="interval">Interval (minutes)</option>
+                            </select>
+                            <input type="number" id="config-modal-general-interval" class="interval-input hidden" placeholder="Minutes" min="1" step="0.5">
+                        </div>
+                    </div>
+
+                    <h4>Pre-configured Commands</h4>
+                    <div class="preconfig-commands">
+                        <label class="preconfig-item">
+                            <input type="checkbox" id="modal-preconfig-system-info">
+                            <div class="preconfig-info">
+                                <span class="preconfig-name">System Info</span>
+                                <span class="preconfig-desc">macOS version information</span>
+                            </div>
+                        </label>
+                        <label class="preconfig-item">
+                            <input type="checkbox" id="modal-preconfig-hostname">
+                            <div class="preconfig-info">
+                                <span class="preconfig-name">Hostname</span>
+                                <span class="preconfig-desc">Machine hostname</span>
+                            </div>
+                        </label>
+                        <label class="preconfig-item">
+                            <input type="checkbox" id="modal-preconfig-uptime">
+                            <div class="preconfig-info">
+                                <span class="preconfig-name">Uptime</span>
+                                <span class="preconfig-desc">System uptime and load</span>
+                            </div>
+                        </label>
+                        <label class="preconfig-item">
+                            <input type="checkbox" id="modal-preconfig-disk-space">
+                            <div class="preconfig-info">
+                                <span class="preconfig-name">Disk Space</span>
+                                <span class="preconfig-desc">Available disk space</span>
+                            </div>
+                        </label>
+                        <label class="preconfig-item">
+                            <input type="checkbox" id="modal-preconfig-network-interfaces">
+                            <div class="preconfig-info">
+                                <span class="preconfig-name">Network Interfaces</span>
+                                <span class="preconfig-desc">Network interface configuration</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <h4>Custom Commands</h4>
+                    <div id="config-modal-commands"></div>
+                    <button type="button" id="modal-add-command-btn" class="btn-secondary">+ Add Custom Command</button>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" id="config-modal-cancel">Cancel</button>
+                        <button type="submit" class="btn-success">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

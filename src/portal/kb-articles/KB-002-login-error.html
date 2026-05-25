@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KB-002: Login Authentication Error</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
+        h1 { color: #2563eb; }
+        h2 { color: #374151; margin-top: 30px; }
+        .kb-meta { background: #f3f4f6; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .kb-meta p { margin: 5px 0; }
+        .steps { background: #f8fafc; padding: 20px; border-left: 4px solid #2563eb; margin: 20px 0; }
+        .steps ol { margin: 0; padding-left: 20px; }
+        .steps li { margin: 10px 0; }
+        code { background: #e5e7eb; padding: 2px 6px; border-radius: 4px; }
+        .warning { background: #fef3c7; padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b; }
+        .info { background: #dbeafe; padding: 15px; border-radius: 8px; border-left: 4px solid #2563eb; }
+    </style>
+</head>
+<body>
+    <h1>KB-002: Resolving Login Authentication Errors</h1>
+
+    <div class="kb-meta">
+        <p><strong>Article ID:</strong> KB-002</p>
+        <p><strong>Last Updated:</strong> May 2026</p>
+        <p><strong>Applies To:</strong> BestVPN v2.0+</p>
+    </div>
+
+    <h2>Symptoms</h2>
+    <p>Users may experience one or more of the following issues:</p>
+    <ul>
+        <li>"Authentication failed" error message</li>
+        <li>"Invalid credentials" even with correct username/password</li>
+        <li>"Session expired" immediately after login</li>
+        <li>Login screen keeps reappearing after entering credentials</li>
+    </ul>
+
+    <h2>Cause</h2>
+    <p>This issue typically occurs due to:</p>
+    <ul>
+        <li>Expired or invalid subscription</li>
+        <li>Cached credentials corruption</li>
+        <li>System clock out of sync (affects token validation)</li>
+        <li>Account locked due to multiple failed attempts</li>
+    </ul>
+
+    <h2>Resolution</h2>
+    <div class="steps">
+        <ol>
+            <li><strong>Verify your subscription status</strong><br>
+                Log in to <code>account.bestvpn.com</code> to check your subscription is active.</li>
+
+            <li><strong>Reset your password</strong><br>
+                Use the "Forgot Password" link on the login screen to reset your credentials.</li>
+
+            <li><strong>Clear cached credentials</strong><br>
+                Go to BestVPN > Preferences > Account > Sign Out, then sign in again.</li>
+
+            <li><strong>Sync your system clock</strong><br>
+                Open System Preferences > Date & Time > Check "Set date and time automatically"</li>
+
+            <li><strong>Clear Keychain entries</strong><br>
+                Open Keychain Access, search for "BestVPN", and delete any stored entries. Then try logging in again.</li>
+
+            <li><strong>Wait 15 minutes if account is locked</strong><br>
+                After 5 failed login attempts, accounts are temporarily locked for security.</li>
+        </ol>
+    </div>
+
+    <div class="info">
+        <strong>Tip:</strong> Enterprise users should contact their IT administrator if the issue persists, as your organization may have specific authentication policies.
+    </div>
+
+    <div class="warning">
+        <strong>Note:</strong> Never share your login credentials. BestVPN support will never ask for your password.
+    </div>
+
+    <h2>Related Articles</h2>
+    <ul>
+        <li>KB-001: VPN Connection Errors</li>
+        <li>KB-004: Two-Factor Authentication Setup</li>
+    </ul>
+</body>
+</html>

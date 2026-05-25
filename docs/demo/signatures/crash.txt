@@ -1,0 +1,3 @@
+libswiftCore.dylib    Array._checkSubscript
+libswiftCore.dylib    Array.subscript.getter
+BestVPN.debug.dylib   static BestVPNCLI.triggerCrash()

@@ -1,0 +1,18 @@
+{
+  "appName": "bestvpn",
+  "productIdentifier": "bestvpn",
+  "monitoringInterval": {
+    "crash": {
+      "frequency": "immediately"
+    },
+    "hang": {
+      "frequency": "immediately"
+    },
+    "general": {
+      "frequency": "interval",
+      "seconds": 300
+    }
+  },
+  "additionalCommands": [
+  ]
+}

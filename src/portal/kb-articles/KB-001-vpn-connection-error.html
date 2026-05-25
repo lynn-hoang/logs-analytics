@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KB-001: VPN Connection Error</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
+        h1 { color: #2563eb; }
+        h2 { color: #374151; margin-top: 30px; }
+        .kb-meta { background: #f3f4f6; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .kb-meta p { margin: 5px 0; }
+        .steps { background: #f8fafc; padding: 20px; border-left: 4px solid #2563eb; margin: 20px 0; }
+        .steps ol { margin: 0; padding-left: 20px; }
+        .steps li { margin: 10px 0; }
+        code { background: #e5e7eb; padding: 2px 6px; border-radius: 4px; }
+        .warning { background: #fef3c7; padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b; }
+    </style>
+</head>
+<body>
+    <h1>KB-001: Resolving VPN Connection Errors</h1>
+
+    <div class="kb-meta">
+        <p><strong>Article ID:</strong> KB-001</p>
+        <p><strong>Last Updated:</strong> May 2026</p>
+        <p><strong>Applies To:</strong> BestVPN v2.0+</p>
+    </div>
+
+    <h2>Symptoms</h2>
+    <p>Users may experience one or more of the following issues:</p>
+    <ul>
+        <li>"Failed to connect to VPN server" error message</li>
+        <li>Connection timeout after 30 seconds</li>
+        <li>VPN connects briefly then disconnects</li>
+    </ul>
+
+    <h2>Cause</h2>
+    <p>This issue typically occurs due to:</p>
+    <ul>
+        <li>Network firewall blocking VPN ports (UDP 1194, TCP 443)</li>
+        <li>Conflicting VPN or security software</li>
+        <li>Outdated network adapter drivers</li>
+        <li>DNS resolution failures</li>
+    </ul>
+
+    <h2>Resolution</h2>
+    <div class="steps">
+        <ol>
+            <li><strong>Check your internet connection</strong><br>
+                Ensure you can browse websites normally without VPN enabled.</li>
+
+            <li><strong>Restart the BestVPN application</strong><br>
+                Quit BestVPN completely and relaunch it.</li>
+
+            <li><strong>Try a different VPN server</strong><br>
+                Go to Settings > Server Selection and choose a different region.</li>
+
+            <li><strong>Flush DNS cache</strong><br>
+                Open Terminal and run: <code>sudo dscacheutil -flushcache</code></li>
+
+            <li><strong>Disable conflicting software</strong><br>
+                Temporarily disable other VPN clients, firewalls, or antivirus software.</li>
+
+            <li><strong>Reset network settings</strong><br>
+                Go to System Preferences > Network > Wi-Fi > Advanced > TCP/IP > Renew DHCP Lease</li>
+        </ol>
+    </div>
+
+    <div class="warning">
+        <strong>Note:</strong> If the issue persists after trying all steps, please contact support with your diagnostic logs.
+    </div>
+
+    <h2>Related Articles</h2>
+    <ul>
+        <li>KB-002: Login Authentication Errors</li>
+        <li>KB-003: Slow VPN Performance</li>
+    </ul>
+</body>
+</html>

@@ -1,0 +1,156 @@
+================================================================================
+                         DATABASE SCHEMA DIAGRAM
+                              analytics.db
+================================================================================
+
+Arrow convention: FK ───► PK (foreign key points to primary key it references)
+
+
+┌─────────────────────────┐
+│   diagnostic_configs    │
+├─────────────────────────┤
+│ config_id (PK) ◄────────┼────────────────────────────────┐
+│ tenant_id (UNIQUE)      │                                │
+│ app_name                │                                │
+│ product_identifier      │                                │
+│ config_json             │                                │
+│ version (auto-bump)     │                                │
+│ created_at              │                                │
+│ updated_at              │                                │
+└─────────────────────────┘                                │
+                                                           │
+┌─────────────────────────────┐                            │
+│    config_notifications     │                            │
+├─────────────────────────────┤                            │
+│ notification_id (PK)        │                            │
+│ config_id (FK) ─────────────┼────────────────────────────┘
+│ tenant_id                   │
+│ bug_id (FK) ────────────────┼───► bugs.bug_id
+│ issue_id (FK) ──────────────┼───► issues.issue_id
+│ changed_by                  │
+│ change_type                 │
+│ change_summary              │
+│ previous_config_json        │
+│ status                      │     (pending|acknowledged|deployed|dismissed)
+│ created_at                  │
+│ acknowledged_by             │
+│ acknowledged_at             │
+│ deployed_at                 │
+└─────────────────────────────┘
+
+
+┌─────────────────────┐
+│        logs         │
+├─────────────────────┤
+│ log_id (PK)         │
+│ trace_id (E2E debug)│
+│ type                │
+│ app_version         │
+│ os_version          │
+│ tenant_id           │
+│ machine_id          │
+│ timestamp           │
+│ content             │
+│ metadata            │
+│ received_at         │
+│ issue_id (FK)───────┼─────────────────┐
+└─────────────────────┘                 │
+                                        ▼
+┌─────────────────────┐      ┌─────────────────────┐      ┌─────────────────────┐
+│        bugs         │      │       issues        │      │   *_signatures      │
+├─────────────────────┤      ├─────────────────────┤      ├─────────────────────┤
+│ bug_id (PK)  ◄──────┼──────┼─ bug_id (FK)        │      │ signature_id (PK) ◄─┼──┐
+│ status              │      │ issue_id (PK)       │      │ signature           │  │
+│ resolution_id (FK)──┼──┐   │ type                │  ┌───┼─ resolution_id (FK) │  │
+│ created_at          │  │   │ status              │  │   │ description         │  │
+└─────────────────────┘  │   │ matched_signature_id├──┼───┘ status              │  │
+                         │   │ tenant_id           │  │   │ created_at          │  │
+                         │   │ occurrence_count    │  │   └─────────────────────┘  │
+                         │   │ created_at          │  │                            │
+                         │   └─────────────────────┘  │   * = crash_, hang_,       │
+                         │                            │       general_signatures   │
+                         ▼                            ▼                            │
+                    ┌─────────────────────┐                                        │
+                    │    resolutions      │◄───────────────────────────────────────┘
+                    ├─────────────────────┤
+                    │ resolution_id (PK)  │
+                    │ type                │
+                    │ content (KB HTML)   │
+                    │ created_at          │
+                    └─────────────────────┘
+
+
+================================================================================
+                            RELATIONSHIPS
+================================================================================
+
+logs.issue_id          ───►  issues.issue_id         (many logs per issue)
+issues.bug_id          ───►  bugs.bug_id             (one bug per issue)
+issues.matched_sig_id  ───►  *_signatures.sig_id     (matched signature)
+bugs.resolution_id     ───►  resolutions.res_id      (bug fix)
+*_sigs.resolution_id   ───►  resolutions.res_id      (known fix)
+config_notif.config_id ───►  diagnostic_configs.id   (config that changed)
+config_notif.bug_id    ───►  bugs.bug_id             (why config changed)
+config_notif.issue_id  ───►  issues.issue_id         (why config changed)
+
+
+================================================================================
+                         ENGINEER WORKFLOW
+================================================================================
+
+To find logs for an Issue:
+  SELECT * FROM logs WHERE issue_id = ?
+
+To find logs for a Bug:
+  SELECT l.* FROM logs l
+  JOIN issues i ON l.issue_id = i.issue_id
+  WHERE i.bug_id = ?
+
+
+================================================================================
+                              DATA FLOW
+================================================================================
+
+1. Log arrives → creates Issue → creates Bug
+2. Additional logs for same issue → linked via issue_id
+3. Signature added with Resolution
+4. Issue matched to Signature → Issue status = "resolved"
+5. Engineer views Issue → sees all logs + resolution
+
+
+================================================================================
+                      CONFIG NOTIFICATION WORKFLOW
+================================================================================
+
+  ENGINEER                          SYSTEM                         ADMIN
+     │                                 │                              │
+     │  1. Working on bug/issue        │                              │
+     │  ───────────────────────►       │                              │
+     │                                 │                              │
+     │  2. Updates diagnostic_configs  │                              │
+     │  ───────────────────────►       │                              │
+     │                                 │                              │
+     │                          3. Auto-creates notification          │
+     │                             status = "pending"                 │
+     │                             links bug_id/issue_id              │
+     │                             snapshots previous config          │
+     │                                 │                              │
+     │                                 │  4. Admin sees pending       │
+     │                                 │     notification in dashboard│
+     │                                 │  ◄────────────────────────── │
+     │                                 │                              │
+     │                                 │  5. Admin reviews change     │
+     │                                 │     (sees diff, reason)      │
+     │                                 │  ◄────────────────────────── │
+     │                                 │                              │
+     │                                 │  6. Admin deploys to:        │
+     │                                 │     - Single machine         │
+     │                                 │     - Entire tenant          │
+     │                                 │  ◄────────────────────────── │
+     │                                 │                              │
+     │                          7. Update notification                │
+     │                             status = "deployed"                │
+     │                             deployed_at = now()                │
+     │                                 │                              │
+
+Status values: pending → acknowledged → deployed (or dismissed)
