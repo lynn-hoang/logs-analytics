@@ -1,0 +1,3 @@
+Scenario: our business-critical desktop application runs across enterprise windows and macos endpoints, where direct customer access for real-time troubleshooting is highly restricted. To scale support, we need to design a log analytics and resolution portal that ingest and parse continuous log streams (raw text, windows event log, macos unified logs) sent by customers or support agents, mapping them back to our application's source logic.
+
+The Challenge: How would you architect this portal to automate the troubleshooting lifecycle? Explain how the system will analyze log patterns to provide customer with immediate, actionaable selfservice resolutions for known issues.
