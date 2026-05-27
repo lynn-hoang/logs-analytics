@@ -1,0 +1,2483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Analytics and Resolution - System Design</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                actorBkg: '#dbeafe',
+                actorBorder: '#2563eb',
+                actorTextColor: '#1e293b',
+                actorLineColor: '#94a3b8',
+                signalColor: '#475569',
+                signalTextColor: '#1e293b',
+                noteBkgColor: '#fef3c7',
+                noteBorderColor: '#f59e0b',
+                noteTextColor: '#92400e',
+                sequenceNumberColor: '#ffffff'
+            },
+            sequence: {
+                actorMargin: 80,
+                mirrorActors: false,
+                messageMargin: 30,
+                boxMargin: 10,
+                useMaxWidth: false
+            }
+        });
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f4f8 50%, #e8f4fc 100%);
+            min-height: 100vh;
+            color: #2d3748;
+        }
+
+        .slide {
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding: 40px 100px;
+            position: relative;
+        }
+
+
+        .slide-number {
+            position: absolute;
+            top: 30px;
+            right: 50px;
+            font-size: 14px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 40px;
+            color: #2563eb;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #64748b;
+            margin-bottom: 40px;
+        }
+
+        .author {
+            font-size: 2rem;
+            color: #475569;
+            margin-top: 60px;
+            font-weight: 600;
+        }
+
+        .prompt-box {
+            background: rgba(255, 255, 255, 0.8);
+            border-left: 4px solid #2563eb;
+            padding: 30px 40px;
+            margin: 20px 0;
+            border-radius: 0 12px 12px 0;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .prompt-box strong {
+            color: #2563eb;
+            display: block;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .prompt-box p {
+            margin-bottom: 15px;
+        }
+
+        .judgment-criteria {
+            margin-top: 30px;
+            padding: 20px 30px;
+            background: rgba(83, 52, 131, 0.1);
+            border-radius: 12px;
+        }
+
+        .judgment-criteria h3 {
+            color: #1e40af;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .judgment-criteria ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .judgment-criteria li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .judgment-criteria li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #2563eb;
+        }
+
+        ul.bullet-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        ul.bullet-list li {
+            padding: 15px 0;
+            padding-left: 35px;
+            position: relative;
+            font-size: 1.3rem;
+            line-height: 1.6;
+        }
+
+        ul.bullet-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 22px;
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            border-radius: 50%;
+        }
+
+        .highlight {
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .user-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .user-table th {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            padding: 20px 30px;
+            text-align: left;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .user-table td {
+            padding: 25px 30px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .user-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .user-table tr:hover td {
+            background: rgba(233, 69, 96, 0.1);
+        }
+
+        .user-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        .component-card {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 15px 0;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .component-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(233, 69, 96, 0.2);
+        }
+
+        .component-card h3 {
+            color: #2563eb;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+
+        .component-card p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .three-column {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        nav {
+            position: fixed;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+        }
+
+        nav a {
+            display: block;
+            width: 12px;
+            height: 12px;
+            margin: 15px 0;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover,
+        nav a.active {
+            background: #2563eb;
+            transform: scale(1.3);
+        }
+
+        /* Understanding section styles */
+        .understanding-container {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .context-row {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+        }
+
+        .context-card {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 16px;
+            padding: 25px 35px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .context-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .context-text {
+            font-size: 1.1rem;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .flow-diagram {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 20px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+        }
+
+        .flow-box {
+            padding: 15px 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .logs-box {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            border: 2px solid #2563eb;
+        }
+
+        .analysis-box {
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+            width: 220px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .detect-box {
+            background: linear-gradient(135deg, #fff7ed, #ffedd5);
+            width: 220px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+
+        .result-box {
+            width: 220px;
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .known-box {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        }
+
+        .unknown-box {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+        }
+
+        .flow-label {
+            display: block;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #1e293b;
+        }
+
+        .flow-sublabel {
+            display: block;
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .flow-icon {
+            display: block;
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .flow-arrow,
+        .branch-arrow,
+        .user-arrow,
+        .flow-arrow-down,
+        .config-arrow,
+        .pipeline-arrow {
+            font-size: 1.3rem;
+            color: #94a3b8;
+            font-weight: normal;
+            align-self: center;
+        }
+
+        .flow-branch {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .flow-branch-only {
+            display: flex;
+            justify-content: center;
+        }
+
+        .branch-line {
+            width: 2px;
+            height: 20px;
+            background: #94a3b8;
+        }
+
+        .branch-paths {
+            display: flex;
+            gap: 60px;
+        }
+
+        .branch-paths-column {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            align-items: center;
+        }
+
+        .branch-path-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .branch-svg {
+            width: 56px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 56px;
+        }
+
+        .flow-svg {
+            width: 56px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 56px;
+            margin-top: 46px;
+        }
+
+        .branch-path {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .path-label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 5px;
+        }
+
+        .self-service-note {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #475569;
+            background: rgba(37, 99, 235, 0.1);
+            padding: 15px 30px;
+            border-radius: 12px;
+            border-left: 4px solid #2563eb;
+        }
+
+        /* Goals section styles */
+        .goals-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .goal-card {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 16px;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .goal-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .goal-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+
+        .goal-desc {
+            font-size: 0.95rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        /* Users section styles */
+        .users-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .user-card {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 16px;
+            padding: 25px 30px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            min-width: 160px;
+        }
+
+        .user-icon-large {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .user-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        .user-role {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .end-user {
+            opacity: 0.6;
+            border: 2px dashed #94a3b8;
+        }
+
+        .enterprise-admin {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        }
+
+        .support-eng {
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+        }
+
+        .dev-eng {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        }
+
+        .user-note {
+            text-align: center;
+            font-size: 1rem;
+            color: #64748b;
+            padding: 15px;
+        }
+
+        .note-highlight {
+            font-weight: 600;
+            color: #475569;
+        }
+
+        /* Architecture diagram styles */
+        .architecture-diagram {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            padding: 30px;
+        }
+
+        /* Three-node high-level diagram (EMA <-> ITE <-> Self-Service Hub) */
+        .three-node-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 24px;
+            /* reduce gap to the note and move spacing below the note instead */
+            margin-bottom: 50px;
+        }
+
+        
+
+        .node-connector {
+            flex: 0 0 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .node-connector svg { width: 140px; height: 28px; }
+
+        /* Ensure arrows between the three nodes match the pipeline arrow style */
+        .node-connector .pipeline-arrow {
+            width: 140px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: #94a3b8;
+            font-weight: normal;
+        }
+
+        .pipeline-arrow.bidir {
+            /* use the same size but allow the bidirectional glyph */
+            font-size: 1.3rem;
+        }
+
+        /* Color and icon styles for the three-node boxes */
+        .node-box {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.95));
+            border-radius: 12px;
+            padding: 18px 24px;
+            width: 220px;
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            /* remove borders and drop shadow for a flat colored appearance */
+            border: none;
+            box-shadow: none;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .node-box.desktop-box {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        }
+
+        /* Remove border from the Endpoint Monitor Agent node in the three-node diagram */
+        .three-node-diagram .node-box.desktop-box {
+            border: none;
+            box-shadow: none;
+        }
+
+        .node-box.backend-box {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        }
+
+        .node-icon {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .node-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .architecture-note {
+            font-size: 0.95rem;
+            color: #475569;
+            margin-top: 0;
+            margin-bottom: 50px;
+            max-width: 900px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        /* Connector arrows (SSE / Logs) - position and style to match pipeline arrows */
+        .connector-arrows {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .connector-arrow {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .connector-arrow .connector-label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .connector-arrow.sse {
+            left: 45%;
+            /* move down by 150px from original 36% position */
+            top: calc(36% + 150px);
+            width: 25%;
+            height: 28px;
+            transform: translateY(-50%);
+        }
+
+        .connector-arrow.logs {
+            left: 45%;
+            top: 72%;
+            /* match SSE width so the arrows are horizontally aligned */
+            width: 25%;
+            height: 28px;
+            transform: translateY(-50%);
+        }
+
+        .arch-row-main {
+            display: flex;
+            align-items: stretch;
+            gap: 150px;
+        }
+
+        .connector-arrows {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .arch-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .arch-box {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 20px 25px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            min-width: 160px;
+        }
+
+        .arch-icon {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .arch-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .arch-desc {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .config-box {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        }
+
+        .monitor-box {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+        }
+
+        .sender-box {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        }
+
+        .backend-external {
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+            min-width: 100px;
+            padding: 15px 20px;
+        }
+
+        .arch-arrow-right {
+            font-size: 1rem;
+            color: #64748b;
+            font-family: monospace;
+        }
+
+        .arch-connector-down {
+            font-size: 0.95rem;
+            color: #64748b;
+        }
+
+        .monitors-container {
+            background: rgba(255, 255, 255, 0.5);
+            border: 2px dashed #94a3b8;
+            border-radius: 16px;
+            padding: 20px 30px;
+        }
+
+        .monitors-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .monitors-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .arch-row-main {
+            display: flex;
+            align-items: stretch;
+            gap: 150px;
+        }
+
+        .ema-container {
+            background: rgba(255, 255, 255, 0.6);
+            border: 2px solid #2563eb;
+            border-radius: 20px;
+            padding: 20px 30px;
+        }
+
+        .ema-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2563eb;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .ema-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .arch-arrows-column {
+            display: flex;
+            flex-direction: column;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .arch-arrow-label {
+            font-size: 0.9rem;
+            color: #64748b;
+            font-family: monospace;
+            white-space: nowrap;
+        }
+
+        .desktop-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .desktop-box {
+            background: rgba(255, 255, 255, 0.4);
+            border: 2px solid #94a3b8;
+            border-radius: 20px;
+            padding: 15px 20px;
+        }
+
+        .desktop-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #64748b;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .desktop-inner {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .app-features-box {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            padding: 15px 20px;
+        }
+
+        .ema-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .monitor-box-small {
+            padding: 10px 15px;
+            min-width: auto;
+        }
+
+        .monitor-box-small .arch-icon {
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+        }
+
+        .monitor-box-small .arch-title {
+            font-size: 0.85rem;
+        }
+
+        .ite-box {
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+            min-width: 200px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ite-container {
+            align-self: stretch;
+        }
+
+
+        .ite-box .arch-icon {
+            font-size: 3rem;
+        }
+
+        .ite-box .arch-title {
+            font-size: 1.2rem;
+        }
+
+        .slide-note {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        /* Smart Log Collection styles */
+        .smart-collection-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .key-decision {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .key-label {
+            font-size: 1rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .key-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #2563eb;
+            background: linear-gradient(135deg, #dbeafe, #eff6ff);
+            padding: 10px 25px;
+            border-radius: 25px;
+        }
+
+        .config-flow {
+            width: 100%;
+        }
+
+        .config-flow-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .config-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 20px 25px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            min-width: 180px;
+        }
+
+        .config-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .config-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        .config-desc {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .config-defines {
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 16px;
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        .defines-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 12px;
+        }
+
+        .defines-items {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .define-chip {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            color: #1e40af;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .defines-examples {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-style: italic;
+        }
+
+        .define-chip-with-example {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Smart Configurations styles */
+        .config-sample-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .config-sample-row {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+        }
+
+        .config-sample-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            flex: 1;
+            max-width: 450px;
+        }
+
+        .config-sample-full {
+            max-width: 700px;
+        }
+
+        .config-sample-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2563eb;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #dbeafe;
+        }
+
+        .config-code {
+            font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        /* Before Shipping styles */
+        .before-shipping-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .shipping-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            max-width: 900px;
+        }
+
+        .shipping-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .shipping-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .shipping-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .shipping-desc {
+            font-size: 0.95rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .shipping-examples {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-style: italic;
+            margin-top: 8px;
+        }
+
+        /* ITE Architecture styles */
+        .ite-architecture {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .ite-flow {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .ite-component {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 15px 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .ite-comp-icon {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .ite-comp-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .ite-comp-desc {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 3px;
+        }
+
+        .ite-ingestion {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        }
+
+        .ite-queue {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+        }
+
+        .ite-orchestrator {
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+        }
+
+        .ite-arrow {
+            font-size: 1.5rem;
+            color: #94a3b8;
+        }
+
+        .ite-processors {
+            background: rgba(255, 255, 255, 0.6);
+            border: 2px dashed #94a3b8;
+            border-radius: 12px;
+            padding: 15px 20px;
+            text-align: center;
+        }
+
+        .ite-processors-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        .ite-processors-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .ite-processor {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .ite-outputs {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .ite-output {
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .ite-output-known {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            color: #065f46;
+        }
+
+        .ite-output-unknown {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            color: #991b1b;
+        }
+
+        .ite-datastores-container {
+            background: rgba(255, 255, 255, 0.5);
+            border: 2px solid #94a3b8;
+            border-radius: 16px;
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        .ite-datastores-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 15px;
+        }
+
+        .ite-datastores {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .ite-datastore {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #475569;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ite-datastore-signature {
+            background: linear-gradient(135deg, #fef3c7, #fbbf24);
+            color: #92400e;
+            font-weight: 600;
+            border: 2px solid #f59e0b;
+            position: relative;
+            padding: 10px 22px;
+        }
+
+        .signature-star {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 1.2rem;
+        }
+
+        .ite-signature-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .ite-signature-link {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .signature-link-arrow {
+            font-size: 1.2rem;
+            color: #f59e0b;
+        }
+
+        .signature-link-text {
+            font-size: 0.85rem;
+            color: #92400e;
+            font-weight: 500;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            padding: 6px 15px;
+            border-radius: 15px;
+        }
+
+        /* Smart Diagnostic styles */
+        .smart-diagnostic-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            align-items: flex-start;
+        }
+
+        .diagnostic-flow {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .diagnostic-step {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 20px 25px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            min-width: 180px;
+        }
+
+        .diagnostic-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .diagnostic-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        .diagnostic-desc {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .diagnostic-arrow {
+            font-size: 1.5rem;
+            color: #94a3b8;
+        }
+
+        .diagnostic-why {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 16px;
+            padding: 20px 30px;
+        }
+
+        .diagnostic-why-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2563eb;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .diagnostic-why-items {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .diagnostic-why-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .why-icon {
+            font-size: 1.3rem;
+        }
+
+        .why-text {
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        .diagnostic-future {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #dbeafe, #eff6ff);
+            padding: 12px 25px;
+            border-radius: 25px;
+            align-self: flex-start;
+        }
+
+        .future-icon {
+            font-size: 1.2rem;
+        }
+
+        .future-text {
+            font-size: 0.95rem;
+            color: #1e40af;
+        }
+
+        /* Pipeline styles */
+        .pipeline-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            align-items: flex-start;
+        }
+
+        .pipeline-flow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .pipeline-step {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 15px 18px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            min-width: 120px;
+        }
+
+        .pipeline-step.server {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        }
+
+        .pipeline-step.desktop {
+            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+        }
+
+        .pipeline-side {
+            display: block;
+            font-size: 0.75rem;
+            color: #2563eb;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .pipeline-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .pipeline-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .pipeline-desc {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .pipeline-benefit {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            padding: 12px 25px;
+            border-radius: 25px;
+        }
+
+        .pipeline-benefit .benefit-icon {
+            font-size: 1.2rem;
+        }
+
+        .pipeline-benefit .benefit-text {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #065f46;
+        }
+
+        .config-benefit {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            padding: 12px 25px;
+            border-radius: 25px;
+        }
+
+        .benefit-icon {
+            font-size: 1.2rem;
+        }
+
+        .benefit-text {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #065f46;
+        }
+
+        .subsection-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #2563eb;
+            margin-top: -15px;
+            margin-bottom: 5px;
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #dbeafe, #eff6ff);
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .subsubsection-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #1e40af;
+            margin-top: 5px;
+            margin-bottom: 20px;
+            padding: 6px 18px;
+            background: linear-gradient(135deg, #e0e7ff, #eef2ff);
+            border-radius: 15px;
+            display: inline-block;
+            border-left: 4px solid #2563eb;
+        }
+
+        /* Scale Considerations styles */
+        .scale-considerations {
+            margin-top: 30px;
+            padding: 20px 30px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 16px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .scale-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2563eb;
+            margin-bottom: 15px;
+        }
+
+        .scale-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .scale-list li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            font-size: 1rem;
+            color: #475569;
+        }
+
+        .scale-list li::before {
+            content: '•';
+            position: absolute;
+            left: 5px;
+            color: #2563eb;
+            font-weight: bold;
+        }
+
+        /* Mermaid Diagram styles */
+        .mermaid-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 16px;
+        }
+
+        .mermaid {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+        }
+
+        @media (max-width: 1200px) {
+            .slide {
+                padding: 40px 60px;
+            }
+            h1 {
+                font-size: 2.5rem;
+            }
+            h2 {
+                font-size: 2rem;
+            }
+            .three-column {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="#slide1" title="Title"></a>
+        <a href="#slide2" title="Interview Prompt"></a>
+        <a href="#slide3" title="My Understanding"></a>
+        <a href="#slide4" title="Goals"></a>
+        <a href="#slide5" title="Users"></a>
+        <a href="#slide6" title="Endpoint Monitor Agent"></a>
+        <a href="#slide7" title="Smart Log Collection"></a>
+        <a href="#slide8" title="Smart Configurations"></a>
+        <a href="#slide9" title="Config Update Pipeline"></a>
+        <a href="#slide10" title="EMA Before Shipping"></a>
+        <a href="#slide11" title="Intelligent Triage Engine"></a>
+        <a href="#slide12" title="Smart Diagnostic"></a>
+        <a href="#slide13" title="Signature Pipeline"></a>
+        <a href="#slide14" title="ITE Before Shipping"></a>
+        <a href="#slide15" title="Self-Service Hub"></a>
+        <a href="#slide16" title="Demo"></a>
+    </nav>
+
+    <!-- Slide 1: Title -->
+    <section class="slide" id="slide1">
+        <span class="slide-number">1</span>
+        <h1>Log Analytics and Resolution</h1>
+        <p class="author">Lynn Hoang</p>
+    </section>
+
+    <!-- Slide 2: Problem Statement (The Prompt) -->
+    <section class="slide" id="slide2">
+        <span class="slide-number">2</span>
+        <h2>Interview Prompt</h2>
+
+        <div class="prompt-box">
+            <strong>Scenario</strong>
+            <p>Our business-critical desktop application runs across enterprise Windows and macOS endpoints, where direct customer access for real-time troubleshooting is highly restricted. To scale support, we need to design a <span class="highlight">Log Analytics and Resolution Portal</span> that ingests and parses continuous log streams (raw text, Windows Event Log, macOS unified logs) sent by customers or support agents, mapping them back to our application's source logic.</p>
+        </div>
+
+        <div class="prompt-box">
+            <strong>The Challenge</strong>
+            <p>How would you architect this portal to automate the troubleshooting lifecycle?</p>
+            <p>Explain how the system will analyze log patterns to provide customers with <span class="highlight">immediate, actionable self-service resolutions</span> for known issues.</p>
+            <p>Additionally, if the log indicates an unknown or ambiguous failure, how would you design a <span class="highlight">smart diagnostic mechanism</span> that automatically determines exactly what is missing and generates a targeted request for specific telemetry, configuration files, or state data?</p>
+        </div>
+
+        <div class="judgment-criteria">
+            <h3>Evaluation Criteria</h3>
+            <ul>
+                <li>Ability to explore the problem statement</li>
+                <li>Creativity/novelty in approach</li>
+                <li>System design</li>
+                <li>Completion of the solution</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Slide 3: My Understanding -->
+    <section class="slide" id="slide3">
+        <span class="slide-number">3</span>
+        <h2>My Understanding</h2>
+
+        <div class="understanding-container">
+            <!-- The Context -->
+            <div class="context-row">
+                <div class="context-card">
+                    <div class="context-icon">🖥️</div>
+                    <div class="context-text"><strong>Enterprise desktop app</strong><br>with no direct endpoint access</div>
+                </div>
+                <div class="context-card">
+                    <div class="context-icon">📈</div>
+                    <div class="context-text">Need <strong>scalable, automated</strong><br>troubleshooting</div>
+                </div>
+            </div>
+
+            <!-- The Two Paths Diagram -->
+            <div class="flow-diagram">
+                <div class="flow-box detect-box">
+                    <span class="flow-label">Auto-detect Issues</span>
+                </div>
+
+                <div class="flow-svg">
+                    <div class="flow-arrow">→</div>
+                </div>
+
+                <div class="flow-box analysis-box">
+                    <span class="flow-label">Auto-classify Issues</span>
+                </div>
+
+                <div class="flow-branch-only">
+                    <div class="branch-paths-column">
+                        <div class="branch-path-row">
+                            <div class="branch-svg">
+                                <div class="branch-arrow">→</div>
+                            </div>
+                            <div class="branch-path known-path">
+                                <div class="flow-box result-box known-box">
+                                    <span class="flow-icon">✓</span>
+                                    <span class="flow-label">Known Issues</span>
+                                    <span class="flow-sublabel">Provide clear self-service fixes</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="branch-path-row">
+                            <div class="branch-svg">
+                                <div class="branch-arrow">→</div>
+                            </div>
+                            <div class="branch-path unknown-path">
+                                <div class="flow-box result-box unknown-box">
+                                    <span class="flow-icon">🔍</span>
+                                    <span class="flow-label">Unknown Issues</span>
+                                    <span class="flow-sublabel">Auto-collect missing data</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 4: Goals -->
+    <section class="slide" id="slide4">
+        <span class="slide-number">4</span>
+        <h2>Goals</h2>
+
+        <div class="goals-grid">
+            <div class="goal-card">
+                <div class="goal-icon">🔌</div>
+                <div class="goal-title">App-Agnostic</div>
+                <div class="goal-desc">Works across any desktop application</div>
+            </div>
+            <div class="goal-card">
+                <div class="goal-icon">🎯</div>
+                <div class="goal-title">Adaptive Collection</div>
+                <div class="goal-desc">Backend controls what to collect at runtime</div>
+            </div>
+            <div class="goal-card">
+                <div class="goal-icon">🤖</div>
+                <div class="goal-title">Automated Diagnostics</div>
+                <div class="goal-desc">Classify issues as known vs. unknown</div>
+            </div>
+            <div class="goal-card">
+                <div class="goal-icon">🛠️</div>
+                <div class="goal-title">Self-Service Resolutions</div>
+                <div class="goal-desc">For known issues: workarounds, uninstall competitors, app/OS updates, etc.</div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Slide 5: Target Users -->
+    <section class="slide" id="slide5">
+        <span class="slide-number">5</span>
+        <h2>Users</h2>
+
+        <div class="users-flow">
+            <div class="user-card end-user">
+                <div class="user-icon-large">👤</div>
+                <div class="user-name">End Users</div>
+                <div class="user-role">Report issues to admins</div>
+            </div>
+
+            <div class="user-arrow">→</div>
+
+            <div class="user-card enterprise-admin">
+                <div class="user-icon-large">👔</div>
+                <div class="user-name">Enterprise Admins</div>
+                <div class="user-role">Support their org's users</div>
+            </div>
+
+            <div class="user-arrow">→</div>
+
+            <div class="user-card support-eng">
+                <div class="user-icon-large">🎧</div>
+                <div class="user-name">Support Engineers</div>
+                <div class="user-role">Support enterprises</div>
+            </div>
+
+            <div class="user-arrow">→</div>
+
+            <div class="user-card dev-eng">
+                <div class="user-icon-large">💻</div>
+                <div class="user-name">Dev Engineers</div>
+                <div class="user-role">Analyze & fix issues</div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Slide 6: High Level Design - Endpoint Monitor Agent -->
+    <section class="slide" id="slide6">
+        <span class="slide-number">6</span>
+        <h2>High Level Design</h2>
+
+        <!-- Three-node High Level Diagram (moved here) -->
+        <div class="three-node-diagram" role="img" aria-label="Endpoint Monitor Agent to Intelligent Triage Engine to Self-Service Hub">
+            <div class="node-box desktop-box">
+                <div class="node-icon">🖥️</div>
+                <div class="node-title">Endpoint Monitor Agent</div>
+            </div>
+
+            <div class="node-connector">
+                <div class="pipeline-arrow bidir">↔</div>
+            </div>
+
+            <div class="node-box backend-box">
+                <div class="node-icon">☁️</div>
+                <div class="node-title">Intelligent Triage Engine</div>
+            </div>
+
+            <div class="node-connector">
+                <div class="pipeline-arrow bidir">↔</div>
+            </div>
+
+            <div class="node-box backend-box">
+                <div class="node-icon">☁️</div>
+                <div class="node-title">Self-Service Hub</div>
+            </div>
+        </div>
+
+        <h3 class="subsection-title">Endpoint Monitor Agent</h3>
+        <h4 class="subsubsection-title">Architecture</h4>
+        
+        <div class="architecture-diagram">
+            <div class="arch-row-main">
+                <!-- Desktop App Container -->
+                <div class="desktop-container">
+                    <div class="desktop-box">
+                        <div class="desktop-label">Desktop App</div>
+                        <div class="desktop-inner">
+                            <!-- App Features -->
+                            <div class="arch-box app-features-box">
+                                <div class="arch-icon">📱</div>
+                                <div class="arch-title">App Features</div>
+                            </div>
+
+                            <!-- EMA Container -->
+                            <div class="ema-container">
+                                <div class="ema-label">Endpoint Monitor Agent</div>
+                                <div class="ema-inner">
+                                    <div class="arch-box config-box">
+                                        <div class="arch-icon">⚙️</div>
+                                        <div class="arch-title">Config Service</div>
+                                    </div>
+
+                                    <div class="arch-connector-down">↓</div>
+
+                                    <div class="monitors-container">
+                                        <div class="monitors-label">Issue Monitors</div>
+                                        <div class="monitors-row">
+                                            <div class="arch-box monitor-box monitor-box-small">
+                                                <div class="arch-icon">💥</div>
+                                                <div class="arch-title">Crash</div>
+                                            </div>
+                                            <div class="arch-box monitor-box monitor-box-small">
+                                                <div class="arch-icon">⏳</div>
+                                                <div class="arch-title">Hang</div>
+                                            </div>
+                                            <div class="arch-box monitor-box monitor-box-small">
+                                                <div class="arch-icon">⚠️</div>
+                                                <div class="arch-title">General</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ITE Box -->
+                <div class="ite-container">
+                    <div class="arch-box ite-box">
+                        <div class="arch-icon">🔍</div>
+                        <div class="arch-title">Intelligent Triage Engine</div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="connector-arrows">
+                <div class="connector-arrow sse">
+                    <div class="connector-label">SSE</div>
+                    <div class="pipeline-arrow">→</div>
+                </div>
+
+                <div class="connector-arrow logs">
+                    <div class="connector-label">Logs</div>
+                    <div class="pipeline-arrow">→</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 7: EMA - Smart Log Collection -->
+    <section class="slide" id="slide7">
+        <span class="slide-number">7</span>
+        <div class="architecture-note">
+            <strong>Design note:</strong> In the demo the Endpoint Monitor Agent receives config-changed
+            notifications via Server-Sent Events (SSE) because it is simple, reliable, and supports automatic
+            reconnection. For production this transport will be configurable, the app can use either WebSocket
+            or SSE, and the Intelligent Triage Engine can support both.
+        </div>
+        <h4 class="subsubsection-title">Smart Log Collection</h4>
+
+        <div class="smart-collection-container">
+            <div class="key-decision">
+                <span class="key-value">Configuration-Driven</span>
+            </div>
+
+            <div class="config-flow">
+                <div class="config-flow-row">
+                    <div class="config-card">
+                        <div class="config-icon">📦</div>
+                        <div class="config-title">Ship Default Configs</div>
+                        <div class="config-desc">Collect crash, hang, app logs, metadata</div>
+                    </div>
+                    <div class="config-arrow">→</div>
+                    <div class="config-card">
+                        <div class="config-icon">🚀</div>
+                        <div class="config-title">On Startup</div>
+                        <div class="config-desc">Pull latest configs from server</div>
+                    </div>
+                    <div class="config-arrow">→</div>
+                    <div class="config-card">
+                        <div class="config-icon">🔔</div>
+                        <div class="config-title">On Server Notification</div>
+                        <div class="config-desc">Download updated configs</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="config-defines">
+                <div class="defines-label">Config Defines:</div>
+                <div class="defines-items">
+                    <span class="define-chip">What app to monitor</span>
+                    <span class="define-chip">What to collect</span>
+                    <span class="define-chip">When to send</span>
+                    <div class="define-chip-with-example">
+                        <span class="define-chip">Additional data to collect</span>
+                        <div class="defines-examples">e.g., AV/FW status, VPN on/off, network speed</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="config-benefit">
+                <span class="benefit-icon">✨</span>
+                <span class="benefit-text">Update collection behavior without client update</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 8: EMA - Smart Configurations -->
+    <section class="slide" id="slide8">
+        <span class="slide-number">8</span>
+        <h4 class="subsubsection-title">Smart Configurations</h4>
+
+        <div class="config-sample-container">
+            <div class="config-sample-card config-sample-full">
+                <pre class="config-code">{
+  "appName": "bestvpn",
+  "productIdentifier": "bestvpn",
+  "includeTelemetry": true,
+  "monitoringInterval": {
+    "crash": { "frequency": "immediately" },
+    "hang": { "frequency": "immediately" },
+    "general": { "frequency": "interval", "seconds": 300 }
+  },
+  "additionalCommands": [
+    {
+      "name": "download_speed",
+      "command": "/usr/bin/curl",
+      "arguments": ["%{speed_download}", "https://speed.cloudflare.com"],
+      "includeWithCrash": false,
+      "includeWithHang": true
+    },
+    {
+      "name": "upload_speed",
+      "command": "/usr/bin/curl",
+      "arguments": ["-X", "POST", "https://speed.cloudflare.com/__up"],
+      "includeWithCrash": false,
+      "includeWithHang": true
+    }
+  ]
+}</pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 9: EMA - Config Update Pipeline -->
+    <section class="slide" id="slide9">
+        <span class="slide-number">9</span>
+        <h4 class="subsubsection-title">Config Update Pipeline</h4>
+
+        <div class="pipeline-container">
+            <div class="pipeline-flow">
+                <div class="pipeline-step server">
+                    <div class="pipeline-side">Server-side</div>
+                    <div class="pipeline-icon">☁️</div>
+                    <div class="pipeline-title">Analyze Issue</div>
+                    <div class="pipeline-desc">Engineers determine what data is needed</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step server">
+                    <div class="pipeline-side">Server-side</div>
+                    <div class="pipeline-icon">☁️</div>
+                    <div class="pipeline-title">Update Config</div>
+                    <div class="pipeline-desc">Add diagnostic commands</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step server">
+                    <div class="pipeline-side">Server-side</div>
+                    <div class="pipeline-icon">☁️</div>
+                    <div class="pipeline-title">Notify Admins</div>
+                    <div class="pipeline-desc">Trigger notification</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step desktop">
+                    <div class="pipeline-side">Desktop-side</div>
+                    <div class="pipeline-title">Endpoint Monitor Agent</div>
+                    <div class="pipeline-desc">Config pushed via SSE</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step desktop">
+                    <div class="pipeline-side">Desktop-side</div>
+                    <div class="pipeline-title">Collect & Send</div>
+                    <div class="pipeline-desc">Agent collects additional data</div>
+                </div>
+            </div>
+
+            <div class="pipeline-benefit">
+                <span class="benefit-icon">⚡</span>
+                <span class="benefit-text">Rapid iteration: Additional data requests pushed to agent in minutes</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 10: EMA - Before Shipping -->
+    <section class="slide" id="slide10">
+        <span class="slide-number">10</span>
+        <h4 class="subsubsection-title">Before Shipping</h4>
+
+        <div class="before-shipping-container">
+            <div class="shipping-grid">
+                <div class="shipping-card">
+                    <div class="shipping-icon">🔒</div>
+                    <div class="shipping-title">PII Scrubbing</div>
+                    <div class="shipping-desc">Remove sensitive data from logs before sending to server</div>
+                    <div class="shipping-examples">e.g., IP addresses, MAC addresses</div>
+                </div>
+                <div class="shipping-card">
+                    <div class="shipping-icon">📦</div>
+                    <div class="shipping-title">Chunked Uploads</div>
+                    <div class="shipping-desc">Upload large files (e.g., crash dumps) in chunks</div>
+                </div>
+                <div class="shipping-card">
+                    <div class="shipping-icon">🔄</div>
+                    <div class="shipping-title">Resumable Uploads</div>
+                    <div class="shipping-desc">Resume interrupted uploads on connection failure</div>
+                </div>
+                <div class="shipping-card">
+                    <div class="shipping-icon">📴</div>
+                    <div class="shipping-title">Offline Support</div>
+                    <div class="shipping-desc">Queue logs locally when offline, send when back online</div>
+                </div>
+                <div class="shipping-card">
+                    <div class="shipping-icon">🌐</div>
+                    <div class="shipping-title">SSE & WebSocket Support</div>
+                    <div class="shipping-desc">Configurable transport: agent uses either SSE or WebSocket as specified in configs.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 11: High Level Design - Intelligent Triage Engine -->
+    <section class="slide" id="slide11">
+        <span class="slide-number">11</span>
+        <h3 class="subsection-title">Intelligent Triage Engine</h3>
+        <h4 class="subsubsection-title">Architecture</h4>
+
+        <div class="ite-architecture">
+            <div class="ite-flow">
+                <!-- Input -->
+                <div class="ite-input">
+                    <div class="ite-component ite-ingestion">
+                        <div class="ite-comp-icon">📥</div>
+                        <div class="ite-comp-title">Log Ingestion</div>
+                        <div class="ite-comp-desc">Validate & normalize</div>
+                    </div>
+                </div>
+
+                <div class="ite-arrow">→</div>
+
+                <!-- Queue -->
+                <div class="ite-component ite-queue">
+                    <div class="ite-comp-icon">📋</div>
+                    <div class="ite-comp-title">Queue</div>
+                    <div class="ite-comp-desc">Handle burst traffic</div>
+                </div>
+
+                <div class="ite-arrow">→</div>
+
+                <!-- Orchestrator -->
+                <div class="ite-component ite-orchestrator">
+                    <div class="ite-comp-icon">🎯</div>
+                    <div class="ite-comp-title">Orchestrator</div>
+                    <div class="ite-comp-desc">Route by type</div>
+                </div>
+
+                <div class="ite-arrow">→</div>
+
+                <!-- Issue Processors -->
+                <div class="ite-processors">
+                    <div class="ite-processors-label">Issue Processors</div>
+                    <div class="ite-processors-row">
+                        <div class="ite-processor">💥 Crash</div>
+                        <div class="ite-processor">⏳ Hang</div>
+                        <div class="ite-processor">⚠️ General</div>
+                    </div>
+                    <div class="ite-comp-desc">Fuzzy match signatures</div>
+                </div>
+
+                <div class="ite-arrow">→</div>
+
+                <!-- Outputs -->
+                <div class="ite-outputs">
+                    <div class="ite-output ite-output-known">✓ Known → Notify Resolution</div>
+                    <div class="ite-output ite-output-unknown">? Unknown → Create Issue/Bug, Request additional data</div>
+                </div>
+            </div>
+
+            <!-- Data Stores -->
+            <div class="ite-datastores-container">
+                <div class="ite-datastores-label">Data Stores</div>
+                <div class="ite-datastores">
+                    <div class="ite-datastore">📁 Logs</div>
+                    <div class="ite-signature-wrapper">
+                        <div class="ite-datastore ite-datastore-signature">
+                            <span class="signature-star">⭐</span>
+                            📝 Signatures
+                        </div>
+                        <div class="ite-signature-link">
+                            <span class="signature-link-arrow">↑</span>
+                            <span class="signature-link-text">Processors fuzzy match logs against Signatures</span>
+                        </div>
+                    </div>
+                    <div class="ite-datastore">🎫 Issues</div>
+                    <div class="ite-datastore">🐛 Bugs</div>
+                    <div class="ite-datastore">📖 KBs</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 12: ITE - Smart Diagnostic -->
+    <section class="slide" id="slide12">
+        <span class="slide-number">12</span>
+        <h4 class="subsubsection-title">Why Signature Matching over ML?</h4>
+
+        <div class="smart-diagnostic-container">
+            <div class="diagnostic-why">
+                <div class="diagnostic-why-items">
+                    <div class="diagnostic-why-item">
+                        <span class="why-icon">👁️</span>
+                        <span class="why-text"><strong>Interpretable</strong> — See exactly why an issue matched</span>
+                    </div>
+                    <div class="diagnostic-why-item">
+                        <span class="why-icon">🎛️</span>
+                        <span class="why-text"><strong>Controllable</strong> — Add/edit/remove without retraining</span>
+                    </div>
+                    <div class="diagnostic-why-item">
+                        <span class="why-icon">🚀</span>
+                        <span class="why-text"><strong>No cold start</strong> — Works day one, no training data needed</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="diagnostic-future">
+                <span class="future-icon">💡</span>
+                <span class="future-text">Future: ML can catch unknown patterns once we have labeled data from resolved issues</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 13: ITE - Signature Creation Pipeline -->
+    <section class="slide" id="slide13">
+        <span class="slide-number">13</span>
+        <h4 class="subsubsection-title">Signature Creation Pipeline</h4>
+
+        <div class="pipeline-container">
+            <div class="pipeline-flow">
+                <div class="pipeline-step">
+                    <div class="pipeline-icon">👨‍💻</div>
+                    <div class="pipeline-title">Investigate & Fix</div>
+                    <div class="pipeline-desc">Support/Dev engineers fix issue (app update, OS update, KBs)</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <div class="pipeline-icon">👨‍💻</div>
+                    <div class="pipeline-title">Create Signature</div>
+                    <div class="pipeline-desc">Add to Signature store</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <div class="pipeline-icon">🔍</div>
+                    <div class="pipeline-title">Match & Resolve</div>
+                    <div class="pipeline-desc">Incoming logs matched → marked resolved</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <div class="pipeline-icon">🔔</div>
+                    <div class="pipeline-title">Notify Admins</div>
+                    <div class="pipeline-desc">Alert with resolution</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <div class="pipeline-icon">👔🚀</div>
+                    <div class="pipeline-title">Rollout Fixes</div>
+                    <div class="pipeline-desc">Admins deploy to endpoints</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 14: ITE - Before Shipping -->
+    <section class="slide" id="slide14">
+        <span class="slide-number">14</span>
+        <h4 class="subsubsection-title">Before Shipping</h4>
+
+        <div class="before-shipping-container">
+            <div class="shipping-grid">
+                <div class="shipping-card">
+                    <div class="shipping-icon">🗂️</div>
+                    <div class="shipping-title">Deduplication</div>
+                    <div class="shipping-desc">Group similar issues into buckets</div>
+                </div>
+                <div class="shipping-card">
+                    <div class="shipping-icon">🐤</div>
+                    <div class="shipping-title">Canary Deployment</div>
+                    <div class="shipping-desc">Gradual rollout of config changes</div>
+                </div>
+                <div class="shipping-card">
+                    <div class="shipping-icon">↩️</div>
+                    <div class="shipping-title">Rollback Strategy</div>
+                    <div class="shipping-desc">Quick rollback for log configs</div>
+                </div>
+                <div class="shipping-card">
+                    <div class="shipping-icon">🔐</div>
+                    <div class="shipping-title">Security</div>
+                    <div class="shipping-desc">Mitigate threats and prevent abuse</div>
+                </div>
+                <div class="shipping-card">
+                    <div class="shipping-icon">⚡</div>
+                    <div class="shipping-title">Fast Access</div>
+                    <div class="shipping-desc">Cache hot issues in memory</div>
+                </div>
+                <div class="shipping-card">
+                    <div class="shipping-icon">📈</div>
+                    <div class="shipping-title">Availability</div>
+                    <div class="shipping-desc">Horizontal scaling on burst traffic</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="scale-considerations">
+            <h4 class="scale-title">Scale Considerations</h4>
+            <ul class="scale-list">
+                <li>100K endpoints × 5 logs/day = 500K logs/day</li>
+                <li>Burst: OS update could 10x traffic in 1 hour</li>
+                <li>Queue absorbs spikes, auto-scaling processors</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Slide 15: Self-Service Resolution Hub -->
+    <section class="slide" id="slide15">
+        <span class="slide-number">15</span>
+        <h3 class="subsection-title">Self-Service Resolution Hub</h3>
+        <h4 class="subsubsection-title">Architecture</h4>
+
+        <div class="ite-architecture">
+            <!-- Role-Based Access Flow -->
+            <div class="ite-flow">
+                <!-- Users -->
+                <div class="ite-processors">
+                    <div class="ite-processors-label">Role-Based Access</div>
+                    <div class="ite-processors-row">
+                        <div class="ite-processor">👔 Enterprise Admins</div>
+                        <div class="ite-processor">🎧 Support Agents</div>
+                        <div class="ite-processor">💻 Engineers</div>
+                    </div>
+                </div>
+
+                <div class="ite-arrow">→</div>
+
+                <!-- Hub -->
+                <div class="ite-component ite-orchestrator">
+                    <div class="ite-comp-icon">🌐</div>
+                    <div class="ite-comp-title">Self-Service Resolution Hub</div>
+                </div>
+
+                <div class="ite-arrow">→</div>
+
+                <!-- APIs -->
+                <div class="ite-processors">
+                    <div class="ite-processors-label">APIs</div>
+                    <div class="ite-processors-row">
+                        <div class="ite-processor">/issues</div>
+                        <div class="ite-processor">/signatures</div>
+                        <div class="ite-processor">/configs</div>
+                    </div>
+                    <div class="ite-comp-desc">CRUD + batch operations</div>
+                </div>
+
+                <div class="ite-arrow">→</div>
+
+                <!-- ITE -->
+                <div class="ite-component ite-ingestion">
+                    <div class="ite-comp-icon">🔍</div>
+                    <div class="ite-comp-title">Intelligent Triage Engine</div>
+                </div>
+            </div>
+
+            <!-- Data Stores -->
+            <div class="ite-datastores-container">
+                <div class="ite-datastores-label">Data Stores</div>
+                <div class="ite-datastores">
+                    <div class="ite-datastore">📁 Logs</div>
+                    <div class="ite-datastore">🎫 Issues</div>
+                    <div class="ite-datastore">🐛 Bugs</div>
+                    <div class="ite-datastore">📝 Signatures</div>
+                    <div class="ite-datastore">📖 KBs</div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Slide 16: Demo -->
+    <section class="slide" id="slide16">
+        <span class="slide-number">16</span>
+        <h2>Demo</h2>
+        <h4 class="subsubsection-title">1. Request Additional Data</h4>
+
+        <div class="mermaid-container">
+            <pre class="mermaid">
+sequenceDiagram
+    participant Agent as 🖥️ Endpoint Monitor Agent
+    participant Hub as 🌐 Self-Service Resolution Hub
+    participant Engine as 🔍 Intelligent Triage Engine
+
+    Hub->>Engine: Support/Dev engineer creates config (collect System Info)
+    Agent->>Engine: On startup, fetch configs
+    Note over Agent: Issue triggered
+    Agent->>Engine: Send logs + System Info
+    Note over Engine: Create issue ticket
+    Hub->>Engine: Support/Dev engineer reviews, needs Uptime
+    Hub->>Engine: Support/Dev engineer updates config to collect Uptime
+    Engine-->>Hub: Notify Admin: configs changed
+    Hub-->>Agent: Admin pushes configs update
+    Note over Agent: Another issue triggered
+    Agent->>Engine: Send logs + System Info + Uptime
+            </pre>
+        </div>
+
+        <h4 class="subsubsection-title">2. Existing Issue Auto-Resolved on New Signature</h4>
+
+        <div class="mermaid-container">
+            <pre class="mermaid">
+sequenceDiagram
+    participant Agent as 🖥️ Endpoint Monitor Agent
+    participant Hub as 🌐 Self-Service Resolution Hub
+    participant Engine as 🔍 Intelligent Triage Engine
+
+    Note over Hub: Support/Dev engineer reviews hang issue
+    Note over Hub: Engineer fixes issue in app code
+    Hub->>Engine: Engineer creates signature for hang issue
+    Hub->>Engine: Engineer requests signature matching on existing issues
+    Note over Engine: Hang issue matches new signature
+    Engine->>Engine: Update issue to 'Resolved' (resolution: update product)
+    Engine-->>Hub: Notify Admin on issue resolved
+            </pre>
+        </div>
+
+        <h4 class="subsubsection-title">3. New Issue Auto-Resolved on Existing Signature</h4>
+
+        <div class="mermaid-container">
+            <pre class="mermaid">
+sequenceDiagram
+    participant Agent as 🖥️ Endpoint Monitor Agent
+    participant Hub as 🌐 Self-Service Resolution Hub
+    participant Engine as 🔍 Intelligent Triage Engine
+
+    Hub->>Engine: Engineer creates signature for 'vpn connection' issue (resolution: KB article)
+    Note over Agent: VPN connection issue triggered
+    Agent->>Engine: Collect and send logs
+    Note over Engine: Create issue ticket
+    Note over Engine: Check logs against signatures - match found
+    Engine->>Engine: Update ticket to 'Resolved' (resolution: KB article)
+    Engine-->>Hub: Notify Admin on issue resolved
+            </pre>
+        </div>
+    </section>
+
+    <script>
+        // Smooth scrolling for navigation
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Update active nav dot on scroll
+        const slides = document.querySelectorAll('.slide');
+        const navLinks = document.querySelectorAll('nav a');
+
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.5
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === '#' + id) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, observerOptions);
+
+        slides.forEach(slide => observer.observe(slide));
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            const currentSlide = Array.from(slides).find(slide => {
+                const rect = slide.getBoundingClientRect();
+                return rect.top >= 0 && rect.top < window.innerHeight / 2;
+            });
+
+            const currentIndex = Array.from(slides).indexOf(currentSlide);
+
+            if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                if (currentIndex < slides.length - 1) {
+                    slides[currentIndex + 1].scrollIntoView({ behavior: 'smooth' });
+                }
+            } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                e.preventDefault();
+                if (currentIndex > 0) {
+                    slides[currentIndex - 1].scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
