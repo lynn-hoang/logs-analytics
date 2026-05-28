@@ -1729,6 +1729,27 @@
             font-weight: bold;
         }
 
+        /* AWS Infrastructure styles */
+        .aws-infrastructure-container {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 20px 30px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            margin: 0 auto;
+        }
+
+        .aws-infrastructure-container .scale-title {
+            margin-bottom: 15px;
+        }
+
+        .aws-diagram {
+            max-height: 65vh;
+            border-radius: 12px;
+        }
+
         /* Mermaid Diagram styles */
         .mermaid-container {
             display: flex;
@@ -1786,8 +1807,9 @@
         <a href="#slide12" title="Smart Diagnostic"></a>
         <a href="#slide13" title="Signature Pipeline"></a>
         <a href="#slide14" title="ITE Before Shipping"></a>
-        <a href="#slide15" title="Self-Service Hub"></a>
-        <a href="#slide16" title="Demo"></a>
+        <a href="#slide15" title="AWS Infrastructure"></a>
+        <a href="#slide16" title="Self-Service Hub"></a>
+        <a href="#slide17" title="Demo"></a>
     </nav>
 
     <!-- Slide 1: Title -->
@@ -2444,9 +2466,19 @@
         </div>
     </section>
 
-    <!-- Slide 15: Self-Service Resolution Hub -->
-    <section class="slide" id="slide15">
+    <!-- Slide 15: ITE - AWS Infrastructure -->
+    <section class="slide" id="slide15" style="align-items: center;">
         <span class="slide-number">15</span>
+
+        <div class="aws-infrastructure-container">
+            <h4 class="scale-title">AWS Infrastructure</h4>
+            <img src="aws-infrastructure.png" alt="AWS Infrastructure for Log Processing Pipeline" class="aws-diagram">
+        </div>
+    </section>
+
+    <!-- Slide 16: Self-Service Resolution Hub -->
+    <section class="slide" id="slide16">
+        <span class="slide-number">16</span>
         <h3 class="subsection-title">Self-Service Resolution Hub</h3>
         <h4 class="subsubsection-title">Architecture</h4>
 
@@ -2508,9 +2540,9 @@
         </div>
     </section>
 
-    <!-- Slide 16: Demo -->
-    <section class="slide" id="slide16">
-        <span class="slide-number">16</span>
+    <!-- Slide 17: Demo -->
+    <section class="slide" id="slide17">
+        <span class="slide-number">17</span>
         <h2>Demo</h2>
         <h4 class="subsubsection-title">1. Request Additional Data</h4>
 
