@@ -1936,7 +1936,7 @@
             <div class="goal-card">
                 <div class="goal-icon">🛠️</div>
                 <div class="goal-title">Self-Service Resolutions</div>
-                <div class="goal-desc">For known issues: workarounds, uninstall competitors, app/OS updates, etc.</div>
+                <div class="goal-desc">For known issues: workarounds, uninstall competitors, app/OS updates, etc.<br>For unknown issues: collect targeted data for investigation</div>
             </div>
         </div>
 
@@ -1966,8 +1966,8 @@
 
             <div class="user-card support-eng">
                 <div class="user-icon-large">🎧</div>
-                <div class="user-name">Support Engineers</div>
-                <div class="user-role">Support enterprises</div>
+                <div class="user-name">Support Agents</div>
+                <div class="user-role">Support enterprises, Analyze & fix issues</div>
             </div>
 
             <div class="user-arrow">→</div>
@@ -2011,6 +2011,8 @@
                 <div class="node-title">Self-Service Hub</div>
             </div>
         </div>
+
+        <div style="margin-top: 60px;"></div>
 
         <h3 class="subsection-title">Endpoint Monitor Agent</h3>
         <h4 class="subsubsection-title">Architecture</h4>
@@ -2109,13 +2111,11 @@
                         <div class="config-title">Ship Default Configs</div>
                         <div class="config-desc">Collect crash, hang, app logs, metadata</div>
                     </div>
-                    <div class="config-arrow">→</div>
                     <div class="config-card">
                         <div class="config-icon">🚀</div>
                         <div class="config-title">On Startup</div>
                         <div class="config-desc">Pull latest configs from server</div>
                     </div>
-                    <div class="config-arrow">→</div>
                     <div class="config-card">
                         <div class="config-icon">🔔</div>
                         <div class="config-title">On Server Notification</div>
@@ -2190,34 +2190,31 @@
         <div class="pipeline-container">
             <div class="pipeline-flow">
                 <div class="pipeline-step server">
-                    <div class="pipeline-side">Server-side</div>
                     <div class="pipeline-icon">☁️</div>
                     <div class="pipeline-title">Analyze Issue</div>
                     <div class="pipeline-desc">Engineers determine what data is needed</div>
                 </div>
                 <div class="pipeline-arrow">→</div>
                 <div class="pipeline-step server">
-                    <div class="pipeline-side">Server-side</div>
                     <div class="pipeline-icon">☁️</div>
                     <div class="pipeline-title">Update Config</div>
                     <div class="pipeline-desc">Add diagnostic commands</div>
                 </div>
                 <div class="pipeline-arrow">→</div>
                 <div class="pipeline-step server">
-                    <div class="pipeline-side">Server-side</div>
                     <div class="pipeline-icon">☁️</div>
                     <div class="pipeline-title">Notify Admins</div>
                     <div class="pipeline-desc">Trigger notification</div>
                 </div>
                 <div class="pipeline-arrow">→</div>
                 <div class="pipeline-step desktop">
-                    <div class="pipeline-side">Desktop-side</div>
+                    <div class="pipeline-icon">🖥️</div>
                     <div class="pipeline-title">Endpoint Monitor Agent</div>
                     <div class="pipeline-desc">Config pushed via SSE</div>
                 </div>
                 <div class="pipeline-arrow">→</div>
                 <div class="pipeline-step desktop">
-                    <div class="pipeline-side">Desktop-side</div>
+                    <div class="pipeline-icon">🖥️</div>
                     <div class="pipeline-title">Collect & Send</div>
                     <div class="pipeline-desc">Agent collects additional data</div>
                 </div>
